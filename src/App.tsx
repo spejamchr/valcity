@@ -43,14 +43,15 @@ const g = -9.8;
 const calcNewPosVel = (
   ball: BallState,
   dt: number, // s
-  canvas: HTMLCanvasElement
+  spacePressed: Maybe<number> // how long the space bar has been pressed, in s
 ): BallState => {
+  const gg = spacePressed.map((sp) => g * (sp + 1)).getOrElseValue(g);
   let newBallState: BallState = {
     ...ball,
     vh: ball.vh,
-    vv: ball.vv + g * dt,
+    vv: ball.vv + gg * dt,
     ph: ball.ph + ball.vh * dt,
-    pv: ball.pv + ((ball.vv + ball.vv + g * dt) / 2) * dt,
+    pv: ball.pv + ((ball.vv + ball.vv + gg * dt) / 2) * dt,
   };
   const conservedSpeed = 0.8; // percent
   const momentumCost = 1; // m / s
@@ -84,9 +85,7 @@ const moveCircle = (ball: BallState, canvas: HTMLCanvasElement) => (circle: Circ
   const scale = calcScale(ball, canvas);
   const ph = canvas.width * 0.1 + (circle.ph - ball.ph) * scale;
 
-  return ph > -circle.r * scale
-    ? circle
-    : { ...circle, ph: (canvas.width * 0.9) / scale + circle.r + ball.ph };
+  return ph > -circle.r * scale ? circle : rc((canvas.width * 0.9) / scale + circle.r + ball.ph);
 };
 
 const renderCircle = (ball: BallState, { canvas, context }: CanvasAndContext) => (
@@ -102,9 +101,9 @@ const renderCircle = (ball: BallState, { canvas, context }: CanvasAndContext) =>
   context.fill();
 };
 
-const rc = (): Circle => ({
+const rc = (ph: number): Circle => ({
   r: Math.random(),
-  ph: Math.random() * 800,
+  ph: ph + Math.random() * 100,
   pv: Math.random() * 20,
 });
 
@@ -114,6 +113,13 @@ const App: React.FC = () => {
   React.useEffect(() => {
     canvasAndContextFromRef(ref).do(({ canvas, context }) => {
       let requestId: Maybe<number> = nothing();
+      let spacePressedAt: Maybe<number> = nothing();
+      window.onkeydown = (e) => {
+        if (e.key === ' ' && !e.repeat) spacePressedAt = just(performance.now());
+      };
+      window.onkeyup = (e) => {
+        if (e.key === ' ') spacePressedAt = nothing();
+      };
 
       let ball: BallState = {
         r: 0.3,
@@ -124,13 +130,12 @@ const App: React.FC = () => {
         pv: 1,
       };
 
-      let circles: Circle[] = [...Array(20)].map(rc);
+      let circles: Circle[] = [...Array(20)].fill(0).map(rc);
 
       let previousTime = performance.now();
       const render = (time: number) => {
         const dt = (time - previousTime) / 1000;
         previousTime = time;
-        context.clearRect(0, 0, canvas.width, canvas.height);
         context.rect(0, 0, canvas.width, canvas.height);
         context.fillStyle = '#333333';
         context.fill();
@@ -138,15 +143,19 @@ const App: React.FC = () => {
         circles = circles.map(moveCircle(ball, canvas));
         circles.forEach(renderCircle(ball, { canvas, context }));
 
-        ball = calcNewPosVel(ball, dt, canvas);
+        ball = calcNewPosVel(
+          ball,
+          dt,
+          spacePressedAt.map((spa) => (time - spa) / 1000)
+        );
         renderBall(ball, { canvas, context });
 
-        const speed = Math.sqrt(ball.vv**2 + ball.vh**2)
-        context.font = '30px sans-serif'
+        const speed = Math.sqrt(ball.vv ** 2 + ball.vh ** 2);
+        context.font = '30px sans-serif';
         context.fillText(`dist (m): ${Math.round(ball.ph)}`, 100, 100);
         context.fillText(`height (m): ${Math.round(ball.pv)}`, 100, 130);
         context.fillText(`speed (m/s): ${Math.round(speed)}`, 100, 160);
-        context.fillText(`framerate (fps): ${Math.round(1/dt)}`, 100, 190);
+        context.fillText(`framerate (fps): ${Math.round(1 / dt)}`, 100, 190);
 
         requestId = just(requestAnimationFrame(render));
       };
