@@ -58,8 +58,15 @@ interface Circle {
   p: Vector;
 }
 
-interface BallState extends Circle {
+interface Ball {
+  r: number; // m
   d: number; // kg/m^3
+  Cd: number; // Drag Coefficient, unitless
+  COR: number; // Coefficient of Restitution (bounciness), unitless
+}
+
+interface BallState extends Ball {
+  p: Vector;
   v: Vector;
 }
 
@@ -83,14 +90,14 @@ const calcNewPosVel = (
 ): BallState => {
   const gg = spacePressed.map((sp) => g.times(10 * sp + 1)).getOrElseValue(g);
   const airDensity = 1.2041; // at 20C https://en.wikipedia.org/wiki/Density_of_air
-  const Cd = 0.47; // https://en.wikipedia.org/wiki/Drag_coefficient
-  const Fd = ball.v.exp(2).times(0.5 * airDensity * Cd * Math.PI * ball.r ** 2);
+  const Fd = ball.v.exp(2).times(0.5 * airDensity * ball.Cd * Math.PI * ball.r ** 2);
   let newBallState: BallState = {
     ...ball,
     v: ball.v.plus(gg.times(dt)).minus(Fd.times(dt / ballMass(ball))),
     p: ball.p.plus(ball.v.times(2).plus(gg.times(dt)).divideBy(2).times(dt)),
   };
-  const conservedSpeed = 0.8 + 0.2 / (1 + Math.exp(0.13 * Math.abs(ball.v.magnitude) - 2));
+  const conservedSpeed =
+    ball.COR - 0.2 + 0.2 / (1 + Math.exp(0.13 * Math.abs(ball.v.magnitude) - 2));
   const momentumCost = 0.1; // m / s
   if (newBallState.p.y < ball.r) {
     const energy = ballEnergy(newBallState);
@@ -116,16 +123,16 @@ const calcScale = (ball: BallState, canvas: HTMLCanvasElement): number => {
 };
 
 const calcLineWidth = (i: number): number => {
-  if (i === 0) return 0.005 * 3**3;
+  if (i === 0) return 0.005 * 3 ** 3;
 
   let eTry = 1;
-  for (eTry = 1; i % 5 ** eTry === 0; eTry++) {}
+  while (i % 5 ** eTry === 0) eTry++;
   return 0.005 * 3 ** (eTry - 1);
 };
 
 const renderLines = (ball: BallState, { canvas, context }: CanvasAndContext): void => {
   const scale = calcScale(ball, canvas);
-  const buffer = 10
+  const buffer = 10;
   const xLeft = Math.round(ball.p.x - (canvas.width * 0.1) / scale) - buffer;
   const xRight = Math.round(ball.p.x + (canvas.width * 0.9) / scale) + buffer;
   for (let xi = xLeft; xi <= xRight; xi++) {
@@ -183,6 +190,29 @@ const rc = (xOffset: number): Circle => ({
 export const ballString = (ball: BallState): string =>
   `// <Ball r: ${ball.r}, d: ${ball.d}, p: ${ball.p}, v: ${ball.v} >`;
 
+type BallType = 'basketball' | 'bowling-ball' | 'golf-ball' | 'ping-pong-ball';
+
+const densityFromRadiusMass = (radius: number, mass: number): number =>
+  mass / ((4 / 3) * Math.PI * radius ** 3);
+
+const radiusMassToRadiusDensity = (radius: number, mass: number) => ({
+  r: radius,
+  d: densityFromRadiusMass(radius, mass),
+});
+
+const makeBall = (type: BallType): Ball => {
+  switch (type) {
+    case 'basketball':
+      return { ...radiusMassToRadiusDensity(0.76 / (2 * Math.PI), 0.6), Cd: 0.47, COR: 0.77 };
+    case 'golf-ball':
+      return { ...radiusMassToRadiusDensity(0.04267 / 2, 0.04593), Cd: 0.35, COR: 0.821 };
+    case 'bowling-ball':
+      return { ...radiusMassToRadiusDensity(0.2159 / 2, 7), Cd: 0.47, COR: 0.8 }; // Guessing the COR
+    case 'ping-pong-ball':
+      return { ...radiusMassToRadiusDensity(0.04 / 2, 0.0027), Cd: 0.47, COR: 0.905 };
+  }
+};
+
 const App: React.FC = () => {
   const ref = React.useRef<HTMLCanvasElement>(null);
 
@@ -198,10 +228,9 @@ const App: React.FC = () => {
       };
 
       let ball: BallState = {
-        r: 0.12,
-        d: 83,
+        ...makeBall('basketball'),
         v: new Vector(0, 0),
-        p: new Vector(0, 2**12),
+        p: new Vector(0, 2 ** 12),
       };
 
       let circles: Circle[] = [...Array(20)].fill(0).map(rc);
