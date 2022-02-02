@@ -2,6 +2,7 @@ import { just, Maybe, nothing } from 'maybeasy';
 import * as React from 'react';
 import { CanvasAndContext, canvasAndContextFromRef } from './CanvasHelpers';
 import { BallState, calcNewPosVel, Circle, makeBallState } from './Physics';
+import { normalizingRandom } from './RandomHelpers';
 import Vector from './Vector';
 
 const calcScale = (ball: BallState, canvas: HTMLCanvasElement): number => {
@@ -53,7 +54,9 @@ const moveCircle = (ball: BallState, canvas: HTMLCanvasElement) => (circle: Circ
   const scale = calcScale(ball, canvas);
   const xPix = canvas.width * 0.1 + (circle.p.x - ball.p.x) * scale;
 
-  return xPix > -circle.r * scale ? circle : rc((canvas.width * 0.9) / scale + circle.r + ball.p.x);
+  return xPix > -circle.r * scale
+    ? circle
+    : randomCircle((canvas.width * 0.9) / scale + circle.r + ball.p.x);
 };
 
 const renderCircle = (ball: BallState, { canvas, context }: CanvasAndContext) => (
@@ -69,11 +72,9 @@ const renderCircle = (ball: BallState, { canvas, context }: CanvasAndContext) =>
   context.fill();
 };
 
-const nr = () => [...Array(4)].map(Math.random).reduce((a, n) => a + n) / 4;
-
-const rc = (xOffset: number): Circle => ({
-  r: nr() * 0.05 + 0.2,
-  p: new Vector(xOffset + Math.random() * 100, nr() * 0.2 + 1.3),
+const randomCircle = (xOffset: number): Circle => ({
+  r: normalizingRandom(4) * 0.05 + 0.2,
+  p: new Vector(xOffset + Math.random() * 100, normalizingRandom(4) * 0.2 + 1.3),
 });
 
 export type Physics =
@@ -104,7 +105,7 @@ const App: React.FC<Props> = ({ physics }) => {
 
       let ball = makeBallState('basketball', [20, 20], [0, 1]);
 
-      let circles: Circle[] = [...Array(20)].fill(0).map(rc);
+      let circles: Circle[] = [...Array(20)].fill(0).map(randomCircle);
 
       let previousTime = performance.now();
       const render = (time: number) => {
