@@ -1,30 +1,6 @@
-import { fromNullable, just, Maybe, nothing } from 'maybeasy';
+import { just, Maybe, nothing } from 'maybeasy';
 import React from 'react';
-
-interface CanvasAndContext {
-  canvas: HTMLCanvasElement;
-  context: CanvasRenderingContext2D;
-}
-
-const canvasAndContextFromRef = (
-  ref: React.RefObject<HTMLCanvasElement>
-): Maybe<CanvasAndContext> =>
-  fromNullable(ref.current)
-    .do(setCanvasScaling)
-    .map((canvas) => ({ canvas }))
-    .assign('context', ({ canvas }) => fromNullable(canvas.getContext('2d')));
-
-const scaleCanvasDimension = (canvas: HTMLCanvasElement, property: 'height' | 'width'): void => {
-  const size = getComputedStyle(canvas).getPropertyValue(property).slice(0, -2);
-
-  canvas[property] = Number(size) * window.devicePixelRatio;
-  canvas.style[property] = `${size}px`;
-};
-
-const setCanvasScaling = (canvas: HTMLCanvasElement): void => {
-  scaleCanvasDimension(canvas, 'height');
-  scaleCanvasDimension(canvas, 'width');
-};
+import { CanvasAndContext, canvasAndContextFromRef } from './CanvasHelpers';
 
 class Vector {
   constructor(public x: number, public y: number) {}
