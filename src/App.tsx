@@ -229,22 +229,24 @@ const App: React.FC = () => {
 
       let ball: BallState = {
         ...makeBall('basketball'),
-        v: new Vector(0, 0),
-        p: new Vector(0, 2 ** 12),
+        v: new Vector(20, 20),
+        p: new Vector(0, 1),
       };
 
       let circles: Circle[] = [...Array(20)].fill(0).map(rc);
 
       let previousTime = performance.now();
       const render = (time: number) => {
-        const dt = (time - previousTime) / 1000;
+        // Don't advance the animation too far at once -- big timesteps break the simulation
+        const dt = Math.min((time - previousTime) / 1000, 1 / 30);
+
         previousTime = time;
         context.rect(0, 0, canvas.width, canvas.height);
         context.fillStyle = '#333333';
         context.fill();
 
-        const spacePressed = spacePressedAt.map((spa) => (time - spa) / 1000);
-        ball = calcNewPosVel(ball, dt, spacePressed);
+        const secondsSpacePressed = spacePressedAt.map((spa) => (time - spa) / 1000);
+        ball = calcNewPosVel(ball, dt, secondsSpacePressed);
         circles = circles.map(moveCircle(ball, canvas));
 
         renderLines(ball, { canvas, context });
