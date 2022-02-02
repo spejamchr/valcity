@@ -1,14 +1,14 @@
 import { nothing } from 'maybeasy';
 import * as React from 'react';
-import { canvasAndContextFromRef } from '../CanvasHelpers';
-import { makeBallState, SimKind } from '../Physics';
+import { canvasAndContextFromRef, setCanvasScaling } from '../../CanvasHelpers';
+import { makeBallState, SimKind } from '../../Physics';
 import {
   randomCircle,
   recordSpacePressed,
   recordSpaceReleased,
   renderSim,
   SimState,
-} from '../SimRender';
+} from '../../SimRender';
 
 interface Props {
   simKind: SimKind;
@@ -19,6 +19,8 @@ const App: React.FC<Props> = ({ simKind }) => {
 
   React.useEffect(() => {
     canvasAndContextFromRef(ref).do((canvasAndContext) => {
+      window.addEventListener('resize', () => setCanvasScaling(canvasAndContext.canvas), true);
+
       let simState: SimState = {
         ...canvasAndContext,
         ball: makeBallState('basketball', [20, 20], [0, 1]),

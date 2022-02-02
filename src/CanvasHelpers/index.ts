@@ -5,16 +5,17 @@ export interface CanvasAndContext {
   context: CanvasRenderingContext2D;
 }
 
-const scaleCanvasDimension = (canvas: HTMLCanvasElement, property: 'height' | 'width'): void => {
-  const size = getComputedStyle(canvas).getPropertyValue(property).slice(0, -2);
+const scaleCanvasDimension = (canvas: HTMLCanvasElement, property: 'Height' | 'Width'): void => {
+  const size: number = window[`inner${property}`];
+  const lower = property.toLowerCase() as Lowercase<typeof property>;
 
-  canvas[property] = Number(size) * window.devicePixelRatio;
-  canvas.style[property] = `${size}px`;
+  canvas[lower] = Number(size) * window.devicePixelRatio;
+  canvas.style[lower] = `${size}px`;
 };
 
-const setCanvasScaling = (canvas: HTMLCanvasElement): void => {
-  scaleCanvasDimension(canvas, 'height');
-  scaleCanvasDimension(canvas, 'width');
+export const setCanvasScaling = (canvas: HTMLCanvasElement): void => {
+  scaleCanvasDimension(canvas, 'Height');
+  scaleCanvasDimension(canvas, 'Width');
 };
 
 export const canvasAndContextFromRef = (

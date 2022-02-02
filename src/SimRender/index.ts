@@ -19,13 +19,15 @@ const calcLineWidth = (i: number): number => {
   return 0.005 * 3 ** (eTry - 1);
 };
 
+const ballPixelPosition = 400; // How many pixels from the left to position the ball
+
 export const renderLines = (ball: BallState, { canvas, context }: CanvasAndContext): void => {
   const scale = calcScale(ball, canvas);
   const buffer = 10;
-  const xLeft = Math.round(ball.p.x - (canvas.width * 0.1) / scale) - buffer;
+  const xLeft = Math.round(ball.p.x - ballPixelPosition / scale) - buffer;
   const xRight = Math.round(ball.p.x + (canvas.width * 0.9) / scale) + buffer;
   for (let xi = xLeft; xi <= xRight; xi++) {
-    const xPix = canvas.width * 0.1 + (xi - ball.p.x) * scale;
+    const xPix = ballPixelPosition + (xi - ball.p.x) * scale;
     const pxWidth = calcLineWidth(xi) * scale;
     context.fillStyle = '#000000';
     context.fillRect(xPix - pxWidth / 2, 0, pxWidth, canvas.height);
@@ -44,7 +46,7 @@ export const renderBall = (ball: BallState, { canvas, context }: CanvasAndContex
   const yPix = canvas.height - scale * ball.p.y;
 
   context.beginPath();
-  context.arc(canvas.width * 0.1, yPix, ball.r * scale, 0, 2 * Math.PI);
+  context.arc(ballPixelPosition, yPix, ball.r * scale, 0, 2 * Math.PI);
   context.fillStyle = '#999999';
   context.fill();
 };
@@ -58,7 +60,7 @@ export const moveCircle = (ball: BallState, canvas: HTMLCanvasElement) => (
   circle: Circle
 ): Circle => {
   const scale = calcScale(ball, canvas);
-  const xPix = canvas.width * 0.1 + (circle.p.x - ball.p.x) * scale;
+  const xPix = ballPixelPosition + (circle.p.x - ball.p.x) * scale;
 
   return xPix > -circle.r * scale
     ? circle
@@ -70,7 +72,7 @@ export const renderCircle = (ball: BallState, { canvas, context }: CanvasAndCont
 ): void => {
   const scale = calcScale(ball, canvas);
   const yPix = canvas.height - scale * circle.p.y;
-  const xPix = canvas.width * 0.1 + (circle.p.x - ball.p.x) * scale;
+  const xPix = ballPixelPosition + (circle.p.x - ball.p.x) * scale;
 
   context.beginPath();
   context.arc(xPix, yPix, circle.r * scale, 0, 2 * Math.PI);
