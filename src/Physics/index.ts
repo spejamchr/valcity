@@ -1,6 +1,13 @@
 import { Maybe } from 'maybeasy';
-import { Physics } from '../App';
 import Vector from '../Vector';
+
+export type SimKind =
+  | 'static'
+  | 'newtons-first-law'
+  | 'gravity'
+  | 'elastic-collision'
+  | 'air-resistance'
+  | 'inelastic-collision';
 
 export interface Circle {
   r: number; // m
@@ -36,10 +43,10 @@ export const calcNewPosVel = (
   ball: Readonly<BallState>,
   dt: number, // s
   spacePressed: Maybe<number>, // how long the space bar has been pressed, in s
-  physics: Physics
+  simKind: SimKind
 ): BallState => {
   const gg = spacePressed.map((sp) => g.times(10 * sp + 1)).getOrElseValue(g);
-  switch (physics) {
+  switch (simKind) {
     case 'static': {
       return ball;
     }

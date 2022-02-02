@@ -1,5 +1,6 @@
+import { just, Maybe, nothing } from 'maybeasy';
 import { CanvasAndContext } from '../CanvasHelpers';
-import { BallState, Circle } from '../Physics';
+import { BallState, calcNewPosVel, Circle, SimKind } from '../Physics';
 import { normalizingRandom } from '../RandomHelpers';
 import Vector from '../Vector';
 
@@ -75,4 +76,50 @@ export const renderCircle = (ball: BallState, { canvas, context }: CanvasAndCont
   context.arc(xPix, yPix, circle.r * scale, 0, 2 * Math.PI);
   context.fillStyle = '#666666';
   context.fill();
+};
+
+export type SimState = {
+  ball: BallState;
+  circles: Circle[];
+  canvas: HTMLCanvasElement;
+  context: CanvasRenderingContext2D;
+  previousTime: number;
+  spacePressedAt: Maybe<number>;
+  simKind: SimKind;
+};
+
+export const recordSpacePressed = (simState: SimState) => (e: KeyboardEvent) => {
+  if (e.key === ' ' && !e.repeat) simState.spacePressedAt = just(performance.now());
+};
+
+export const recordSpaceReleased = (simState: SimState) => (e: KeyboardEvent) => {
+  if (e.key === ' ') simState.spacePressedAt = nothing();
+};
+
+export const renderSim = (time: number, state: Readonly<SimState>): SimState => {
+  // Don't advance the animation too far at once -- big timesteps break the simulation
+  const dt = Math.min((time - state.previousTime) / 1000, 1 / 30);
+  const previousTime = time;
+
+  state.context.rect(0, 0, state.canvas.width, state.canvas.height);
+  state.context.fillStyle = '#333333';
+  state.context.fill();
+
+  const secondsSpacePressed = state.spacePressedAt.map((spa) => (time - spa) / 1000);
+  const ball = calcNewPosVel(state.ball, dt, secondsSpacePressed, state.simKind);
+  const circles = state.circles.map(moveCircle(ball, state.canvas));
+
+  renderLines(ball, state);
+  circles.forEach(renderCircle(ball, state));
+  renderBall(ball, state);
+
+  state.context.font = '30px sans-serif';
+  state.context.fillText(`dist (m): ${Math.trunc(ball.p.x)}`, 100, 100);
+  state.context.fillText(`height (m): ${Math.trunc(ball.p.y)}`, 100, 130);
+  state.context.fillText(`speed (m/s): ${Math.trunc(ball.v.magnitude)}`, 100, 160);
+  state.context.fillText(`vx (m/s): ${Math.trunc(ball.v.x)}`, 100, 190);
+  state.context.fillText(`vy (m/s): ${Math.trunc(ball.v.y)}`, 100, 220);
+  state.context.fillText(`framerate (fps): ${Math.round(1 / dt)}`, 100, 250);
+
+  return { ...state, ball, circles, previousTime };
 };
