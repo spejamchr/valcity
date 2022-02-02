@@ -1,14 +1,14 @@
 import { nothing } from 'maybeasy';
 import * as React from 'react';
-import { canvasAndContextFromRef } from './CanvasHelpers';
-import { makeBallState, SimKind } from './Physics';
+import { canvasAndContextFromRef } from '../CanvasHelpers';
+import { makeBallState, SimKind } from '../Physics';
 import {
   randomCircle,
   recordSpacePressed,
   recordSpaceReleased,
   renderSim,
   SimState,
-} from './SimRender';
+} from '../SimRender';
 
 interface Props {
   simKind: SimKind;
