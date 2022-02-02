@@ -5,7 +5,7 @@ import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <App physics="static" />
   </React.StrictMode>,
   document.getElementById('root')
 );

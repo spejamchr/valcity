@@ -74,45 +74,105 @@ const g = new Vector(0, -9.8);
 
 const ballMass = (ball: Readonly<BallState>): number => ((ball.d * 4) / 3) * Math.PI * ball.r ** 3;
 
-const ballPotentialEnergy = (ball: Readonly<BallState>): number =>
-  g.magnitude * ballMass(ball) * (ball.p.y - ball.r);
+const ballPotentialEnergy = (ball: Readonly<BallState>, gg: Vector): number =>
+  gg.magnitude * ballMass(ball) * (ball.p.y - ball.r);
 
 const ballKineticEnergy = (ball: Readonly<BallState>): number =>
   0.5 * ballMass(ball) * ball.v.magnitude ** 2;
 
-const ballEnergy = (ball: Readonly<BallState>): number =>
-  ballPotentialEnergy(ball) + ballKineticEnergy(ball);
+const ballEnergy = (ball: Readonly<BallState>, gg: Vector): number =>
+  ballPotentialEnergy(ball, gg) + ballKineticEnergy(ball);
 
 const calcNewPosVel = (
   ball: Readonly<BallState>,
   dt: number, // s
-  spacePressed: Maybe<number> // how long the space bar has been pressed, in s
+  spacePressed: Maybe<number>, // how long the space bar has been pressed, in s
+  physics: Physics
 ): BallState => {
   const gg = spacePressed.map((sp) => g.times(10 * sp + 1)).getOrElseValue(g);
-  const airDensity = 1.2041; // at 20C https://en.wikipedia.org/wiki/Density_of_air
-  const Fd = ball.v.exp(2).times(0.5 * airDensity * ball.Cd * Math.PI * ball.r ** 2);
-  let newBallState: BallState = {
-    ...ball,
-    v: ball.v.plus(gg.times(dt)).minus(Fd.times(dt / ballMass(ball))),
-    p: ball.p.plus(ball.v.times(2).plus(gg.times(dt)).divideBy(2).times(dt)),
-  };
-  const conservedSpeed =
-    ball.COR - 0.2 + 0.2 / (1 + Math.exp(0.13 * Math.abs(ball.v.magnitude) - 2));
-  const momentumCost = 0.1; // m / s
-  if (newBallState.p.y < ball.r) {
-    const energy = ballEnergy(newBallState);
-    newBallState.p.y = ball.r + conservedSpeed * (ball.r - newBallState.p.y);
-    const potentialEnergy = ballPotentialEnergy(newBallState);
-    const kineticEnergy = energy - potentialEnergy;
-    const speed = Math.sqrt((2 * kineticEnergy) / ballMass(ball)) || 0.001;
-    newBallState.v = newBallState.v.withMagnitude(speed);
+  switch (physics) {
+    case 'static': {
+      return ball;
+    }
+    case 'newtons-first-law': {
+      return {
+        ...ball,
+        v: ball.v,
+        p: ball.p.plus(ball.v.times(dt)),
+      };
+    }
+    case 'gravity': {
+      return {
+        ...ball,
+        v: ball.v.plus(gg.times(dt)),
+        p: ball.p.plus(ball.v.times(2).plus(gg.times(dt)).divideBy(2).times(dt)),
+      };
+    }
+    case 'elastic-collision': {
+      let newBallState: BallState = {
+        ...ball,
+        v: ball.v.plus(gg.times(dt)),
+        p: ball.p.plus(ball.v.times(2).plus(gg.times(dt)).divideBy(2).times(dt)),
+      };
+      if (newBallState.p.y < ball.r) {
+        const energy = ballEnergy(newBallState, gg);
+        newBallState.p.y = 2 * ball.r - newBallState.p.y;
+        const potentialEnergy = ballPotentialEnergy(newBallState, gg);
+        const kineticEnergy = energy - potentialEnergy;
+        const speed = Math.sqrt((2 * kineticEnergy) / ballMass(ball)) || 0.001;
+        newBallState.v = newBallState.v.withMagnitude(speed);
 
-    newBallState.v = newBallState.v
-      .reflection(new Vector(0, 1))
-      .times(conservedSpeed)
-      .minusMagnitude(momentumCost);
+        newBallState.v = newBallState.v.reflection(new Vector(0, 1));
+      }
+      return newBallState;
+    }
+    case 'air-resistance': {
+      const airDensity = 1.2041; // at 20C https://en.wikipedia.org/wiki/Density_of_air
+      const Fd = ball.v.exp(2).times(0.5 * airDensity * ball.Cd * Math.PI * ball.r ** 2);
+      let newBallState: BallState = {
+        ...ball,
+        v: ball.v.plus(gg.times(dt)).minus(Fd.times(dt / ballMass(ball))),
+        p: ball.p.plus(ball.v.times(2).plus(gg.times(dt)).divideBy(2).times(dt)),
+      };
+      if (newBallState.p.y < ball.r) {
+        const energy = ballEnergy(newBallState, gg);
+        newBallState.p.y = 2 * ball.r - newBallState.p.y;
+        const potentialEnergy = ballPotentialEnergy(newBallState, gg);
+        const kineticEnergy = energy - potentialEnergy;
+        const speed = Math.sqrt((2 * kineticEnergy) / ballMass(ball)) || 0.001;
+        newBallState.v = newBallState.v.withMagnitude(speed);
+
+        newBallState.v = newBallState.v.reflection(new Vector(0, 1));
+      }
+      return newBallState;
+    }
+    case 'inelastic-collision': {
+      const airDensity = 1.2041; // at 20C https://en.wikipedia.org/wiki/Density_of_air
+      const Fd = ball.v.exp(2).times(0.5 * airDensity * ball.Cd * Math.PI * ball.r ** 2);
+      let newBallState: BallState = {
+        ...ball,
+        v: ball.v.plus(gg.times(dt)).minus(Fd.times(dt / ballMass(ball))),
+        p: ball.p.plus(ball.v.times(2).plus(gg.times(dt)).divideBy(2).times(dt)),
+      };
+      const conservedSpeed =
+        ball.COR - 0.2 + 0.2 / (1 + Math.exp(0.13 * Math.abs(ball.v.magnitude) - 2));
+      const momentumCost = 0.1; // m / s
+      if (newBallState.p.y < ball.r) {
+        const energy = ballEnergy(newBallState, gg);
+        newBallState.p.y = ball.r + conservedSpeed * (ball.r - newBallState.p.y);
+        const potentialEnergy = ballPotentialEnergy(newBallState, gg);
+        const kineticEnergy = energy - potentialEnergy;
+        const speed = Math.sqrt((2 * kineticEnergy) / ballMass(ball)) || 0.001;
+        newBallState.v = newBallState.v.withMagnitude(speed);
+
+        newBallState.v = newBallState.v
+          .reflection(new Vector(0, 1))
+          .times(conservedSpeed)
+          .minusMagnitude(momentumCost);
+      }
+      return newBallState;
+    }
   }
-  return newBallState;
 };
 
 const calcScale = (ball: BallState, canvas: HTMLCanvasElement): number => {
@@ -213,7 +273,19 @@ const makeBall = (type: BallType): Ball => {
   }
 };
 
-const App: React.FC = () => {
+export type Physics =
+  | 'static'
+  | 'newtons-first-law'
+  | 'gravity'
+  | 'elastic-collision'
+  | 'air-resistance'
+  | 'inelastic-collision';
+
+interface Props {
+  physics: Physics;
+}
+
+const App: React.FC<Props> = ({ physics }) => {
   const ref = React.useRef<HTMLCanvasElement>(null);
 
   React.useEffect(() => {
@@ -246,7 +318,7 @@ const App: React.FC = () => {
         context.fill();
 
         const secondsSpacePressed = spacePressedAt.map((spa) => (time - spa) / 1000);
-        ball = calcNewPosVel(ball, dt, secondsSpacePressed);
+        ball = calcNewPosVel(ball, dt, secondsSpacePressed, physics);
         circles = circles.map(moveCircle(ball, canvas));
 
         renderLines(ball, { canvas, context });
