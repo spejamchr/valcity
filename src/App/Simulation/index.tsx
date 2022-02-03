@@ -1,40 +1,24 @@
-import { nothing } from 'maybeasy';
+import { observer } from 'mobx-react';
 import * as React from 'react';
 import { canvasAndContextFromRef, setCanvasScaling } from '../../CanvasHelpers';
-import { makeBallState, SimKind } from '../../Physics';
-import {
-  randomCircle,
-  recordSpacePressed,
-  recordSpaceReleased,
-  renderSim,
-  SimState,
-} from '../../SimRender';
+import { recordSpacePressed, recordSpaceReleased, renderSim, SimState } from '../../SimRender';
 
 interface Props {
-  simKind: SimKind;
+  simState: SimState;
 }
 
-const App: React.FC<Props> = ({ simKind }) => {
+const Simulation: React.FC<Props> = ({ simState }) => {
   const ref = React.useRef<HTMLCanvasElement>(null);
 
   React.useEffect(() => {
-    canvasAndContextFromRef(ref).do((canvasAndContext) => {
-      window.addEventListener('resize', () => setCanvasScaling(canvasAndContext.canvas), true);
-
-      let simState: SimState = {
-        ...canvasAndContext,
-        ball: makeBallState('basketball', [20, 20], [0, 1]),
-        circles: [...Array(20)].fill(0).map(randomCircle),
-        previousTime: performance.now(),
-        spacePressedAt: nothing(),
-        simKind,
-      };
+    canvasAndContextFromRef(ref).do(({ canvas, context }) => {
+      window.addEventListener('resize', () => setCanvasScaling(canvas), true);
 
       window.onkeydown = recordSpacePressed(simState);
       window.onkeyup = recordSpaceReleased(simState);
 
       const render = (time: number) => {
-        simState = renderSim(time, simState);
+        simState = renderSim(time, simState, canvas, context);
         const requestId = requestAnimationFrame(render);
         return () => cancelAnimationFrame(requestId);
       };
@@ -46,4 +30,4 @@ const App: React.FC<Props> = ({ simKind }) => {
   return <canvas ref={ref} style={{ width: '100vw', height: '100vh' }} />;
 };
 
-export default App;
+export default observer(Simulation);

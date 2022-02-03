@@ -83,8 +83,6 @@ export const renderCircle = (ball: BallState, { canvas, context }: CanvasAndCont
 export type SimState = {
   ball: BallState;
   circles: Circle[];
-  canvas: HTMLCanvasElement;
-  context: CanvasRenderingContext2D;
   previousTime: number;
   spacePressedAt: Maybe<number>;
   simKind: SimKind;
@@ -98,30 +96,35 @@ export const recordSpaceReleased = (simState: SimState) => (e: KeyboardEvent) =>
   if (e.key === ' ') simState.spacePressedAt = nothing();
 };
 
-export const renderSim = (time: number, state: Readonly<SimState>): SimState => {
+export const renderSim = (
+  time: number,
+  state: Readonly<SimState>,
+  canvas: HTMLCanvasElement,
+  context: CanvasRenderingContext2D
+): SimState => {
   // Don't advance the animation too far at once -- big timesteps break the simulation
   const dt = Math.min((time - state.previousTime) / 1000, 1 / 30);
   const previousTime = time;
 
-  state.context.rect(0, 0, state.canvas.width, state.canvas.height);
-  state.context.fillStyle = '#333333';
-  state.context.fill();
+  context.rect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = '#333333';
+  context.fill();
 
   const secondsSpacePressed = state.spacePressedAt.map((spa) => (time - spa) / 1000);
   const ball = calcNewPosVel(state.ball, dt, secondsSpacePressed, state.simKind);
-  const circles = state.circles.map(moveCircle(ball, state.canvas));
+  const circles = state.circles.map(moveCircle(ball, canvas));
 
-  renderLines(ball, state);
-  circles.forEach(renderCircle(ball, state));
-  renderBall(ball, state);
+  renderLines(ball, { canvas, context });
+  circles.forEach(renderCircle(ball, { canvas, context }));
+  renderBall(ball, { canvas, context });
 
-  state.context.font = '30px sans-serif';
-  state.context.fillText(`dist (m): ${Math.trunc(ball.p.x)}`, 100, 100);
-  state.context.fillText(`height (m): ${Math.trunc(ball.p.y)}`, 100, 130);
-  state.context.fillText(`speed (m/s): ${Math.trunc(ball.v.magnitude)}`, 100, 160);
-  state.context.fillText(`vx (m/s): ${Math.trunc(ball.v.x)}`, 100, 190);
-  state.context.fillText(`vy (m/s): ${Math.trunc(ball.v.y)}`, 100, 220);
-  state.context.fillText(`framerate (fps): ${Math.round(1 / dt)}`, 100, 250);
+  context.font = '30px sans-serif';
+  context.fillText(`dist (m): ${Math.trunc(ball.p.x)}`, 100, 100);
+  context.fillText(`height (m): ${Math.trunc(ball.p.y)}`, 100, 130);
+  context.fillText(`speed (m/s): ${Math.trunc(ball.v.magnitude)}`, 100, 160);
+  context.fillText(`vx (m/s): ${Math.trunc(ball.v.x)}`, 100, 190);
+  context.fillText(`vy (m/s): ${Math.trunc(ball.v.y)}`, 100, 220);
+  context.fillText(`framerate (fps): ${Math.round(1 / dt)}`, 100, 250);
 
   return { ...state, ball, circles, previousTime };
 };

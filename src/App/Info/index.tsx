@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import { styled } from '../../stitches.config';
 
 const Info = styled('div', {
@@ -10,4 +11,4 @@ const Info = styled('div', {
   paddingY: 10,
 });
 
-export default Info;
+export default observer(Info);
