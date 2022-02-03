@@ -12,13 +12,14 @@ const Simulation: React.FC<Props> = ({ simState }) => {
 
   React.useEffect(() => {
     canvasAndContextFromRef(ref).do(({ canvas, context }) => {
+      let mutatedSimState = simState;
       window.addEventListener('resize', () => setCanvasScaling(canvas), true);
 
-      window.onkeydown = recordSpacePressed(simState);
-      window.onkeyup = recordSpaceReleased(simState);
+      window.onkeydown = recordSpacePressed(mutatedSimState);
+      window.onkeyup = recordSpaceReleased(mutatedSimState);
 
       const render = (time: number) => {
-        simState = renderSim(time, simState, canvas, context);
+        mutatedSimState = renderSim(time, mutatedSimState, canvas, context);
         const requestId = requestAnimationFrame(render);
         return () => cancelAnimationFrame(requestId);
       };
