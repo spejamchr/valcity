@@ -1,27 +1,34 @@
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { canvasAndContextFromRef, setCanvasScaling } from '../../CanvasHelpers';
-import { recordSpacePressed, recordSpaceReleased, renderSim, SimState } from '../../SimRender';
+import { canvasAndContextFromRef } from '../../CanvasHelpers';
+import { addWindowEventListeners, removeWindowEventListeners } from './CreateStore';
+import SimulationStore from './Store';
 
 interface Props {
-  simState: SimState;
+  simulationStore: SimulationStore;
 }
 
-const Simulation: React.FC<Props> = ({ simState }) => {
+const Simulation: React.FC<Props> = ({ simulationStore }) => {
   const ref = React.useRef<HTMLCanvasElement>(null);
 
   React.useEffect(() => {
     canvasAndContextFromRef(ref).do(({ canvas, context }) => {
-      let mutatedSimState = simState;
-      window.addEventListener('resize', () => setCanvasScaling(canvas), true);
-
-      window.onkeydown = recordSpacePressed(mutatedSimState);
-      window.onkeyup = recordSpaceReleased(mutatedSimState);
+      simulationStore.setCanvasAndContext({ canvas, context });
+      addWindowEventListeners(simulationStore, canvas);
 
       const render = (time: number) => {
-        mutatedSimState = renderSim(time, mutatedSimState, canvas, context);
+        simulationStore.updateTime(time);
+
+        context.rect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = '#333333';
+        context.fill();
+
+        simulationStore.runSystems();
         const requestId = requestAnimationFrame(render);
-        return () => cancelAnimationFrame(requestId);
+        return () => {
+          cancelAnimationFrame(requestId);
+          removeWindowEventListeners(simulationStore, canvas);
+        };
       };
 
       return render(performance.now());
