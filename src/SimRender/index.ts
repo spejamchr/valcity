@@ -74,19 +74,3 @@ export const renderSystem: System = (store) => {
   lineRenderSystem(store);
   entityRenderSystem(store);
 };
-
-// export const randomCircle = (xOffset: number): Circle => ({
-//   r: normalizingRandom(4) * 0.05 + 0.2,
-//   p: new Vector(xOffset + Math.random() * 100, normalizingRandom(4) * 0.2 + 1.3),
-// });
-
-// export const moveCircle = (ball: BallState, canvas: HTMLCanvasElement) => (
-//   circle: Circle
-// ): Circle => {
-//   const scale = calcScale(ball, canvas);
-//   const xPix = ballPixelPosition + (circle.p.x - ball.p.x) * scale;
-
-//   return xPix > -circle.r * scale
-//     ? circle
-//     : randomCircle((canvas.width * 0.9) / scale + circle.r + ball.p.x);
-// };

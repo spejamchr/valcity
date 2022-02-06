@@ -46,14 +46,18 @@ const flatInelasticCollision = (
 ): Pick<Entity, 'position' | 'velocity'> => {
   // Reduce amount of conserved speed at higher speeds
   const conservedSpeed = rc - 0.2 + 0.2 / (1 + Math.exp(0.13 * Math.abs(velocity.magnitude) - 2));
-  // TODO: Remove momentumCost ?
+  // TODO: Remove momentumCost? It reduces jittering when the ball is stopped.
   const momentumCost = 0.1; // m / s
   const energy = entityEnergy({ mass: 1, position, shape, velocity }, gg);
   position.y = shape.radius + conservedSpeed * (shape.radius - position.y);
   const potentialEnergy = entityPotentialEnergy({ mass: 1, position, shape }, gg);
   const kineticEnergy = energy - potentialEnergy;
   const speed = Math.sqrt(2 * kineticEnergy) || 0.001;
-  velocity = velocity.withMagnitude(speed).times(conservedSpeed).minusMagnitude(momentumCost);
+  velocity = velocity
+    .withMagnitude(speed)
+    .times(conservedSpeed)
+    .minusMagnitude(momentumCost)
+    .reflection(new Vector(0, 1));
 
   return {
     position: just(position),
@@ -122,7 +126,7 @@ export const physicsSystem: System = (store) => {
       store.addEntity({
         position: entity.position,
         shape: entity.shape,
-        fillStyle: just('#880000'),
+        fillStyle: entity.fillStyle,
         velocity: nothing(),
         mass: nothing(),
         dragCoefficient: nothing(),
@@ -135,21 +139,3 @@ export const physicsSystem: System = (store) => {
   store.withEntities((entity) => flatCollision(entity, gg));
   store.withEntities((entity) => airResistance(entity, store.contextVars.dt));
 };
-
-// export const makeBall = (type: BallType, simKind: SimKind): Ball => {
-//   switch (type) {
-//     case 'basketball':
-//       return {
-//         ...radiusMassToRadiusDensity(0.76 / (2 * Math.PI), 0.6),
-//         Cd: 0.47,
-//         COR: 0.77,
-//         simKind,
-//       };
-//     case 'golf-ball':
-//       return { ...radiusMassToRadiusDensity(0.04267 / 2, 0.04593), Cd: 0.35, COR: 0.821, simKind };
-//     case 'bowling-ball':
-//       return { ...radiusMassToRadiusDensity(0.2159 / 2, 7), Cd: 0.47, COR: 0.8, simKind }; // Guessing the COR
-//     case 'ping-pong-ball':
-//       return { ...radiusMassToRadiusDensity(0.04 / 2, 0.0027), Cd: 0.47, COR: 0.905, simKind };
-//   }
-// };
