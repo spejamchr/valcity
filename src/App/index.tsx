@@ -7,12 +7,12 @@ import { createStore } from './Simulation/CreateStore';
 interface Props {}
 
 const App: React.FC<Props> = () => {
-  const simulationStore = createStore();
+  const store = createStore();
 
   return (
     <>
-      <Simulation simulationStore={simulationStore} />
-      <Display simulationStore={simulationStore} />
+      <Simulation store={store} />
+      <Display store={store} />
     </>
   );
 };

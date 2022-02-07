@@ -8,9 +8,9 @@ import SimulationStore from './Store';
 import { circleShape } from './Types';
 
 export const createStore = (): SimulationStore => {
-  const simulationStore = new SimulationStore();
+  const store = new SimulationStore();
 
-  simulationStore.addEntity({
+  store.addEntity({
     position: just(new Vector(0.0, 0)),
     velocity: nothing(),
     shape: just(circleShape(0.01)),
@@ -23,7 +23,7 @@ export const createStore = (): SimulationStore => {
     persistent: just(null),
   });
 
-  simulationStore.addEntity({
+  store.addEntity({
     position: just(new Vector(0.0, 1)),
     velocity: just(new Vector(5, 5)),
     shape: just(circleShape(0.76 / (2 * Math.PI))),
@@ -36,7 +36,7 @@ export const createStore = (): SimulationStore => {
     persistent: just(null),
   });
 
-  simulationStore.addEntity({
+  store.addEntity({
     position: just(new Vector(0.1, 1)),
     velocity: just(new Vector(5, 5)),
     shape: just(circleShape(0.76 / (2 * Math.PI))),
@@ -49,7 +49,7 @@ export const createStore = (): SimulationStore => {
     persistent: just(null),
   });
 
-  simulationStore.addEntity({
+  store.addEntity({
     position: just(new Vector(0.2, 1)),
     velocity: just(new Vector(5, 5)),
     shape: just(circleShape(0.76 / (2 * Math.PI))),
@@ -62,10 +62,10 @@ export const createStore = (): SimulationStore => {
     persistent: just(null),
   });
 
-  simulationStore.addSystem(physicsSystem);
-  simulationStore.addSystem(renderSystem);
+  store.addSystem(physicsSystem);
+  store.addSystem(renderSystem);
 
-  return simulationStore;
+  return store;
 };
 
 export const addWindowEventListeners = (

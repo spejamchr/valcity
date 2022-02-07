@@ -5,26 +5,26 @@ import { addWindowEventListeners, removeWindowEventListeners } from './CreateSto
 import SimulationStore from './Store';
 
 interface Props {
-  simulationStore: SimulationStore;
+  store: SimulationStore;
 }
 
-const Simulation: React.FC<Props> = ({ simulationStore }) => {
+const Simulation: React.FC<Props> = ({ store }) => {
   const ref = React.useRef<HTMLCanvasElement>(null);
 
   React.useEffect(() => {
     canvasAndContextFromRef(ref).do(({ canvas, context }) => {
-      simulationStore.setCanvasAndContext({ canvas, context });
-      addWindowEventListeners(simulationStore, canvas);
+      store.setCanvasAndContext({ canvas, context });
+      addWindowEventListeners(store, canvas);
 
       const render = (time: number) => {
-        simulationStore.updateTime(time);
-        simulationStore.runSystems();
+        store.updateTime(time);
+        store.runSystems();
 
         const requestId = requestAnimationFrame(render);
 
         return () => {
           cancelAnimationFrame(requestId);
-          removeWindowEventListeners(simulationStore, canvas);
+          removeWindowEventListeners(store, canvas);
         };
       };
 

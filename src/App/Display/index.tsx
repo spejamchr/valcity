@@ -9,7 +9,7 @@ import SimulationStore from '../Simulation/Store';
 import { Entity } from '../Simulation/Types';
 
 interface Props {
-  simulationStore: SimulationStore;
+  store: SimulationStore;
 }
 
 const SideBySide = styled('div', {
@@ -17,12 +17,12 @@ const SideBySide = styled('div', {
   justifyContent: 'space-between',
 });
 
-const Display: React.FC<Props> = ({ simulationStore }) => (
+const Display: React.FC<Props> = ({ store }) => (
   <Info>
     <ClickToShow title="Controls">
-      <button onClick={simulationStore.pause}>Pause</button>
-      <button onClick={simulationStore.run}>run</button>
-      <button onClick={simulationStore.restart}>Restart</button>
+      <button onClick={store.pause}>Pause</button>
+      <button onClick={store.run}>run</button>
+      <button onClick={store.restart}>Restart</button>
       </ClickToShow>
     <ClickToShow title="State Info">
       {filterMap(
@@ -32,7 +32,7 @@ const Display: React.FC<Props> = ({ simulationStore }) => (
             .assign('color', e.fillStyle.map(String))
             .assign('position', e.position)
             .assign('velocity', e.velocity),
-        simulationStore.entities
+        store.entities
       ).map(({ id, name, color, position, velocity }) => (
         <ClickToShow key={id} title={name}>
           <SideBySide>
