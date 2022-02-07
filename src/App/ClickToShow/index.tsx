@@ -7,7 +7,6 @@ interface Props {}
 const Container = styled('div', {
   display: 'flex',
   flexDirection: 'column',
-  border: '3px solid $gray400',
 });
 
 const ShowHide = styled('span', {
@@ -20,6 +19,7 @@ const Children = styled('div', {
   padding: '5px',
   paddingTop: 0,
   marginTop: '-5px',
+  borderRight: '3px solid $base07',
 });
 
 interface Props {

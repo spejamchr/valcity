@@ -35,8 +35,9 @@ class SimulationStore {
     });
   }
 
-  addEntity = (entity: Entity): void => {
-    this.state.entities = [...this.state.entities, entityWithInternals(entity)];
+  addEntity = (entity: Omit<Entity, 'id'>): void => {
+    const id = this.state.entities.reduce((maxId, {id}) => id > maxId ? id : maxId, 0) + 1;
+    this.state.entities = [...this.state.entities, entityWithInternals({...entity, id})];
   };
 
   addSystem = (system: System): void => {

@@ -132,6 +132,7 @@ export const physicsSystem: System = (store) => {
         dragCoefficient: nothing(),
         restitutionCoefficient: nothing(),
         trackPosition: nothing(),
+        name: nothing(),
       })
     )
   );

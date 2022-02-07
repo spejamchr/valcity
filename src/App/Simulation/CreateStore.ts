@@ -2,7 +2,7 @@ import { just, nothing } from 'maybeasy';
 import { setCanvasScaling } from '../../CanvasHelpers';
 import { physicsSystem } from '../../Physics';
 import { renderSystem } from '../../SimRender';
-import {theme} from '../../stitches.config';
+import { theme } from '../../stitches.config';
 import Vector from '../../Vector';
 import SimulationStore from './Store';
 import { circleShape } from './Types';
@@ -19,6 +19,7 @@ export const createStore = (): SimulationStore => {
     dragCoefficient: nothing(),
     restitutionCoefficient: nothing(),
     trackPosition: nothing(),
+    name: nothing(),
   });
 
   simulationStore.addEntity({
@@ -30,21 +31,11 @@ export const createStore = (): SimulationStore => {
     dragCoefficient: nothing(),
     restitutionCoefficient: just(0.77),
     trackPosition: nothing(),
+    name: just('Realistic Bouncing'),
   });
 
   simulationStore.addEntity({
     position: just(new Vector(0.1, 1)),
-    velocity: just(new Vector(5, 5)),
-    shape: just(circleShape(0.76 / (2 * Math.PI))),
-    fillStyle: just(theme.colors.base0B.value),
-    mass: just(0.6),
-    dragCoefficient: just(0.47),
-    restitutionCoefficient: just(0.77),
-    trackPosition: nothing(),
-  });
-
-  simulationStore.addEntity({
-    position: just(new Vector(0.2, 1)),
     velocity: just(new Vector(5, 5)),
     shape: just(circleShape(0.76 / (2 * Math.PI))),
     fillStyle: just(theme.colors.base0D.value),
@@ -52,6 +43,19 @@ export const createStore = (): SimulationStore => {
     dragCoefficient: just(0.47),
     restitutionCoefficient: nothing(),
     trackPosition: nothing(),
+    name: just('Realistic Drag'),
+  });
+
+  simulationStore.addEntity({
+    position: just(new Vector(0.2, 1)),
+    velocity: just(new Vector(5, 5)),
+    shape: just(circleShape(0.76 / (2 * Math.PI))),
+    fillStyle: just(theme.colors.base0B.value),
+    mass: just(0.6),
+    dragCoefficient: just(0.47),
+    restitutionCoefficient: just(0.77),
+    trackPosition: nothing(),
+    name: just('Realistic Bouncing & Drag'),
   });
 
   simulationStore.addSystem(physicsSystem);

@@ -3,7 +3,7 @@ import { CanvasAndContext } from '../../CanvasHelpers';
 import Vector from '../../Vector';
 import SimulationStore from './Store';
 
-type FillStyle = CanvasRenderingContext2D['fillStyle'];
+export type FillStyle = CanvasRenderingContext2D['fillStyle'];
 
 export interface RectangleShape {
   kind: 'rectangle-shape';
@@ -53,11 +53,12 @@ export type Components = {
   dragCoefficient: number;
   restitutionCoefficient: number; // Bounciness
   trackPosition: null;
+  name: string;
 };
 
 export type Entity = {
   [K in keyof Components]: Maybe<Components[K]>;
-};
+} & { id: number };
 
 export type Internals = {
   startingPosition: Entity['position'];
