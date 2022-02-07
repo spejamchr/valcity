@@ -18,13 +18,10 @@ const Simulation: React.FC<Props> = ({ simulationStore }) => {
 
       const render = (time: number) => {
         simulationStore.updateTime(time);
-
-        context.rect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = '#333333';
-        context.fill();
-
         simulationStore.runSystems();
+
         const requestId = requestAnimationFrame(render);
+
         return () => {
           cancelAnimationFrame(requestId);
           removeWindowEventListeners(simulationStore, canvas);

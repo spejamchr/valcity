@@ -19,6 +19,11 @@ const SideBySide = styled('div', {
 
 const Display: React.FC<Props> = ({ simulationStore }) => (
   <Info>
+    <ClickToShow title="Controls">
+      <button onClick={simulationStore.pause}>Pause</button>
+      <button onClick={simulationStore.run}>run</button>
+      <button onClick={simulationStore.restart}>Restart</button>
+      </ClickToShow>
     <ClickToShow title="State Info">
       {filterMap(
         (e: Entity) =>

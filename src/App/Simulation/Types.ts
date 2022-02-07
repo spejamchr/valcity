@@ -1,4 +1,4 @@
-import { Maybe, nothing } from 'maybeasy';
+import { just, Maybe, nothing } from 'maybeasy';
 import { CanvasAndContext } from '../../CanvasHelpers';
 import Vector from '../../Vector';
 import SimulationStore from './Store';
@@ -54,6 +54,7 @@ export type Components = {
   restitutionCoefficient: number; // Bounciness
   trackPosition: null;
   name: string;
+  persistent: null; // Persists through restarts
 };
 
 export type Entity = {
@@ -63,21 +64,22 @@ export type Entity = {
 export type Internals = {
   startingPosition: Entity['position'];
   startingVelocity: Entity['velocity'];
-}
+};
 
-export type EntityWithInternals = Entity & Internals
+export type EntityWithInternals = Entity & Internals;
 
 export const entityWithInternals = (entity: Entity): EntityWithInternals => ({
   ...entity,
   startingPosition: entity.position,
   startingVelocity: entity.velocity,
-})
+});
 
 export interface ContextVars {
   frameStartAt: number;
   dt: number;
   spacePressedAt: Maybe<number>;
   canvasAndContext: Maybe<CanvasAndContext>;
+  run: Maybe<null>;
 }
 
 export const makeContextVars = (): ContextVars => ({
@@ -85,6 +87,7 @@ export const makeContextVars = (): ContextVars => ({
   dt: 0.001,
   spacePressedAt: nothing(),
   canvasAndContext: nothing(),
+  run: just(null),
 });
 
 // A System runs any action with the whole store

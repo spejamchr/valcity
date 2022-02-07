@@ -1,4 +1,5 @@
 import { just, Maybe, nothing } from 'maybeasy';
+import SimulationStore from '../App/Simulation/Store';
 import { Entity, Shape, System } from '../App/Simulation/Types';
 import { fromBoolM } from '../MaybeHelpers';
 import Vector from '../Vector';
@@ -119,25 +120,30 @@ export const airResistance = (entity: Entity, dt: number): Maybe<Entity> =>
       };
     });
 
+const addTrackingEntity = (store: SimulationStore, entity: Entity) =>
+  store.addEntity({
+    position: entity.position,
+    shape: entity.shape,
+    fillStyle: entity.fillStyle,
+    velocity: nothing(),
+    mass: nothing(),
+    dragCoefficient: nothing(),
+    restitutionCoefficient: nothing(),
+    trackPosition: nothing(),
+    name: nothing(),
+    persistent: nothing(),
+  });
+
 export const physicsSystem: System = (store) => {
-  const gg = store.contextVars.spacePressedAt.map((sp) => g.times(10 * sp + 1)).getOrElseValue(g);
-  store.entities.forEach((entity) =>
-    entity.trackPosition.do(() =>
-      store.addEntity({
-        position: entity.position,
-        shape: entity.shape,
-        fillStyle: entity.fillStyle,
-        velocity: nothing(),
-        mass: nothing(),
-        dragCoefficient: nothing(),
-        restitutionCoefficient: nothing(),
-        trackPosition: nothing(),
-        name: nothing(),
-      })
-    )
-  );
-  store.withEntities((entity) => newtonsFirstLaw(entity, store.contextVars.dt));
-  store.withEntities((entity) => gravity(entity, store.contextVars.dt, gg));
-  store.withEntities((entity) => flatCollision(entity, gg));
-  store.withEntities((entity) => airResistance(entity, store.contextVars.dt));
+  store.contextVars.run.do(() => {
+    const gg = store.contextVars.spacePressedAt.map((sp) => g.times(10 * sp + 1)).getOrElseValue(g);
+    store.entities.forEach((entity) =>
+      entity.trackPosition.do(() => addTrackingEntity(store, entity))
+    );
+
+    store.withEntities((entity) => newtonsFirstLaw(entity, store.contextVars.dt));
+    store.withEntities((entity) => gravity(entity, store.contextVars.dt, gg));
+    store.withEntities((entity) => flatCollision(entity, gg));
+    store.withEntities((entity) => airResistance(entity, store.contextVars.dt));
+  });
 };

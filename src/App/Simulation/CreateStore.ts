@@ -20,6 +20,7 @@ export const createStore = (): SimulationStore => {
     restitutionCoefficient: nothing(),
     trackPosition: nothing(),
     name: nothing(),
+    persistent: just(null),
   });
 
   simulationStore.addEntity({
@@ -32,6 +33,7 @@ export const createStore = (): SimulationStore => {
     restitutionCoefficient: just(0.77),
     trackPosition: nothing(),
     name: just('Realistic Bouncing'),
+    persistent: just(null),
   });
 
   simulationStore.addEntity({
@@ -44,6 +46,7 @@ export const createStore = (): SimulationStore => {
     restitutionCoefficient: nothing(),
     trackPosition: nothing(),
     name: just('Realistic Drag'),
+    persistent: just(null),
   });
 
   simulationStore.addEntity({
@@ -56,6 +59,7 @@ export const createStore = (): SimulationStore => {
     restitutionCoefficient: just(0.77),
     trackPosition: nothing(),
     name: just('Realistic Bouncing & Drag'),
+    persistent: just(null),
   });
 
   simulationStore.addSystem(physicsSystem);

@@ -20,6 +20,9 @@ class SimulationStore {
       recordSpaceReleased: action,
       updateTime: action,
       setCanvasAndContext: action,
+      pause: action,
+      run: action,
+      restart: action,
       entities: computed,
       contextVars: computed,
       minEntityX: computed,
@@ -36,8 +39,8 @@ class SimulationStore {
   }
 
   addEntity = (entity: Omit<Entity, 'id'>): void => {
-    const id = this.state.entities.reduce((maxId, {id}) => id > maxId ? id : maxId, 0) + 1;
-    this.state.entities = [...this.state.entities, entityWithInternals({...entity, id})];
+    const id = this.state.entities.reduce((maxId, { id }) => (id > maxId ? id : maxId), 0) + 1;
+    this.state.entities = [...this.state.entities, entityWithInternals({ ...entity, id })];
   };
 
   addSystem = (system: System): void => {
@@ -79,6 +82,23 @@ class SimulationStore {
 
   setCanvasAndContext = (canvasAndContext: CanvasAndContext): void => {
     this.state.contextVars.canvasAndContext = just(canvasAndContext);
+  };
+
+  pause = (): void => {
+    this.state.contextVars.run = nothing();
+  };
+
+  run = (): void => {
+    this.state.contextVars.run = just(null);
+  };
+
+  restart = (): void => {
+    this.filterEntities((e) => e.persistent.map(() => true).getOrElseValue(false));
+    this.state.entities = this.state.entities.map((e) => ({
+      ...e,
+      position: e.startingPosition,
+      velocity: e.startingVelocity,
+    }));
   };
 
   get entities(): ReadonlyArray<Entity> {
