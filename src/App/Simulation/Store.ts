@@ -2,14 +2,14 @@ import { just, Maybe, nothing } from 'maybeasy';
 import { action, computed, observable } from 'mobx';
 import { CanvasAndContext } from '../../CanvasHelpers';
 import fullyAnnotatedObservable from '../../FullyAnnotatedObservable';
-import { ContextVars, Entity, makeState, State, System } from './Types';
+import { ContextVars, Entity, entityWithInternals, makeState, State, System } from './Types';
 
 class SimulationStore {
   public state: State;
   constructor() {
     this.state = makeState();
 
-    fullyAnnotatedObservable(this, {
+    fullyAnnotatedObservable<SimulationStore>(this, {
       state: observable,
       addEntity: action,
       addSystem: action,
@@ -36,7 +36,7 @@ class SimulationStore {
   }
 
   addEntity = (entity: Entity): void => {
-    this.state.entities = [...this.state.entities, entity];
+    this.state.entities = [...this.state.entities, entityWithInternals(entity)];
   };
 
   addSystem = (system: System): void => {
@@ -48,9 +48,10 @@ class SimulationStore {
   };
 
   withEntities = (fn: (entity: Entity) => Entity | void | Maybe<Entity>): void => {
-    this.state.entities = this.entities.map((entity) => {
-      const r = fn(entity);
-      return r instanceof Maybe ? r.getOrElseValue(entity) : r || entity;
+    this.state.entities = this.state.entities.map((entity) => {
+      const temp = fn(entity);
+      const ret = temp instanceof Maybe ? temp.getOrElseValue(entity) : temp || entity;
+      return { ...entity, ...ret };
     });
   };
 

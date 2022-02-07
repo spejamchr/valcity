@@ -52,11 +52,25 @@ export type Components = {
   mass: number;
   dragCoefficient: number;
   restitutionCoefficient: number; // Bounciness
+  trackPosition: null;
 };
 
 export type Entity = {
   [K in keyof Components]: Maybe<Components[K]>;
 };
+
+export type Internals = {
+  startingPosition: Entity['position'];
+  startingVelocity: Entity['velocity'];
+}
+
+export type EntityWithInternals = Entity & Internals
+
+export const entityWithInternals = (entity: Entity): EntityWithInternals => ({
+  ...entity,
+  startingPosition: entity.position,
+  startingVelocity: entity.velocity,
+})
 
 export interface ContextVars {
   frameStartAt: number;
@@ -76,7 +90,7 @@ export const makeContextVars = (): ContextVars => ({
 export type System = (store: SimulationStore) => void;
 
 export interface State {
-  entities: ReadonlyArray<Entity>;
+  entities: ReadonlyArray<EntityWithInternals>;
   contextVars: ContextVars;
   systems: ReadonlyArray<System>;
 }

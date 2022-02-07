@@ -2,39 +2,58 @@ import { just, nothing } from 'maybeasy';
 import { setCanvasScaling } from '../../CanvasHelpers';
 import { physicsSystem } from '../../Physics';
 import { renderSystem } from '../../SimRender';
+import {theme} from '../../stitches.config';
 import Vector from '../../Vector';
 import SimulationStore from './Store';
 import { circleShape } from './Types';
 
 export const createStore = (): SimulationStore => {
   const simulationStore = new SimulationStore();
+
   simulationStore.addEntity({
-    position: just(new Vector(0, 1)),
-    velocity: just(new Vector(20, 20)),
-    shape: just(circleShape(0.76 / (2 * Math.PI))),
-    fillStyle: just('#FF0000'),
-    mass: just(0.6),
-    dragCoefficient: just(0.47),
-    restitutionCoefficient: just(0.77),
+    position: just(new Vector(0.0, 0)),
+    velocity: nothing(),
+    shape: just(circleShape(0.01)),
+    fillStyle: just(theme.colors.base01.value),
+    mass: nothing(),
+    dragCoefficient: nothing(),
+    restitutionCoefficient: nothing(),
+    trackPosition: nothing(),
   });
+
   simulationStore.addEntity({
-    position: just(new Vector(0.1, 1)),
-    velocity: just(new Vector(20, 20)),
+    position: just(new Vector(0.0, 1)),
+    velocity: just(new Vector(5, 5)),
     shape: just(circleShape(0.76 / (2 * Math.PI))),
-    fillStyle: just('#00FF00'),
+    fillStyle: just(theme.colors.base08.value),
     mass: just(0.6),
     dragCoefficient: nothing(),
     restitutionCoefficient: just(0.77),
+    trackPosition: nothing(),
   });
+
+  simulationStore.addEntity({
+    position: just(new Vector(0.1, 1)),
+    velocity: just(new Vector(5, 5)),
+    shape: just(circleShape(0.76 / (2 * Math.PI))),
+    fillStyle: just(theme.colors.base0B.value),
+    mass: just(0.6),
+    dragCoefficient: just(0.47),
+    restitutionCoefficient: just(0.77),
+    trackPosition: nothing(),
+  });
+
   simulationStore.addEntity({
     position: just(new Vector(0.2, 1)),
-    velocity: just(new Vector(20, 20)),
+    velocity: just(new Vector(5, 5)),
     shape: just(circleShape(0.76 / (2 * Math.PI))),
-    fillStyle: just('#0000FF'),
+    fillStyle: just(theme.colors.base0D.value),
     mass: just(0.6),
     dragCoefficient: just(0.47),
     restitutionCoefficient: nothing(),
+    trackPosition: nothing(),
   });
+
   simulationStore.addSystem(physicsSystem);
   simulationStore.addSystem(renderSystem);
 

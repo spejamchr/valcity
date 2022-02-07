@@ -1,10 +1,11 @@
 import { just } from 'maybeasy';
 import { System } from '../App/Simulation/Types';
+import { theme } from '../stitches.config';
 
 const backgroundRenderSystem: System = (store) => {
   store.contextVars.canvasAndContext.do(({ canvas, context }) => {
     context.rect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = '#333333';
+    context.fillStyle = theme.colors.base00.value;
     context.fill();
   });
 };
@@ -47,7 +48,7 @@ const lineRenderSystem: System = (store) => {
       for (let xi = xLeft; xi <= xRight; xi++) {
         const xPix = (xi - minViewX) * scale;
         const pxWidth = calcLineWidth(xi) * scale;
-        context.fillStyle = '#000000';
+        context.fillStyle = theme.colors.base03.value;
         context.fillRect(xPix - pxWidth / 2, 0, pxWidth, canvas.height);
       }
 
@@ -55,7 +56,7 @@ const lineRenderSystem: System = (store) => {
       for (let yi = 1; yi <= xTop; yi++) {
         const yPix = canvas.height - yi * scale;
         const pxHeight = calcLineWidth(yi) * scale;
-        context.fillStyle = '#000000';
+        context.fillStyle = theme.colors.base03.value;
         context.fillRect(0, yPix - pxHeight / 2, canvas.width, pxHeight);
       }
     });

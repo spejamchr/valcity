@@ -122,7 +122,7 @@ export const airResistance = (entity: Entity, dt: number): Maybe<Entity> =>
 export const physicsSystem: System = (store) => {
   const gg = store.contextVars.spacePressedAt.map((sp) => g.times(10 * sp + 1)).getOrElseValue(g);
   store.entities.forEach((entity) =>
-    entity.velocity.do(() =>
+    entity.trackPosition.do(() =>
       store.addEntity({
         position: entity.position,
         shape: entity.shape,
@@ -131,6 +131,7 @@ export const physicsSystem: System = (store) => {
         mass: nothing(),
         dragCoefficient: nothing(),
         restitutionCoefficient: nothing(),
+        trackPosition: nothing(),
       })
     )
   );
