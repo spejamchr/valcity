@@ -31,19 +31,16 @@ const Display: React.FC<Props> = ({ simulationStore }) => (
       ).map(({ id, name, color, position, velocity }) => (
         <ClickToShow key={id} title={name}>
           <SideBySide>
-            <dl>
-              <dt>Position</dt>
-              <dd>
-                ({Math.trunc(position.x)}, {Math.trunc(position.y)})
-              </dd>
-              <dt>Velocity</dt>
-              <dd>
-                ({Math.trunc(velocity.x)}, {Math.trunc(velocity.y)})
-              </dd>
-              <dt>Speed</dt>
-              <dd>{Math.trunc(velocity.magnitude)}</dd>
-            </dl>
-            <span style={{ color, fontSize: 'xxx-large' }}>&#9679;</span>
+            <div>
+              <p>
+                Position: ({Math.trunc(position.x)}, {Math.trunc(position.y)})
+              </p>
+              <p>
+                Velocity: ({Math.trunc(velocity.x)}, {Math.trunc(velocity.y)})
+              </p>
+              <p>Speed: {Math.trunc(velocity.magnitude)}</p>
+            </div>
+            <span style={{ color, fontSize: 'x-large' }}>⬤</span>
           </SideBySide>
         </ClickToShow>
       ))}

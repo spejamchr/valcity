@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { styled } from '../../stitches.config';
+import { styled, theme } from '../../stitches.config';
 
 interface Props {}
 
@@ -9,17 +9,22 @@ const Container = styled('div', {
   flexDirection: 'column',
 });
 
-const ShowHide = styled('span', {
-  alignSelf: 'flex-end',
+const ShowHide = styled('button', {
+  margin: '5px',
+  backgroundColor: theme.colors.base01,
+  border: 'none',
+  color: theme.colors.base05,
+  textAlign: 'left',
+  textDecoration: 'none',
+  display: 'inline-block',
+  fontSize: '16px',
   cursor: 'pointer',
-  padding: '5px',
 });
 
 const Children = styled('div', {
-  padding: '5px',
-  paddingTop: 0,
-  marginTop: '-5px',
-  borderRight: '3px solid $base07',
+  paddingLeft: '5px',
+  marginLeft: '0.5em',
+  borderLeft: `3px solid ${theme.colors.base07}`,
 });
 
 interface Props {
@@ -32,14 +37,15 @@ const ClickToShow: React.FC<Props> = ({ title, children }) => {
   if (show) {
     return (
       <Container>
-        <ShowHide onClick={() => setShow(false)}>{title} &#9650;</ShowHide>
+        <ShowHide onClick={() => setShow(false)}>{title} ▲</ShowHide>
         <Children>{children}</Children>
       </Container>
     );
   } else {
     return (
       <Container>
-        <ShowHide onClick={() => setShow(true)}>{title} &#9660;</ShowHide>
+        <ShowHide onClick={() => setShow(true)}>{title} ▼</ShowHide>
+        <Children css={{ display: 'none' }}>{children}</Children>
       </Container>
     );
   }

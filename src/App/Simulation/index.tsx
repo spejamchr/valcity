@@ -35,7 +35,14 @@ const Simulation: React.FC<Props> = ({ simulationStore }) => {
     });
   });
 
-  return <canvas ref={ref} style={{ width: '100vw', height: '100vh' }} />;
+  return (
+    <canvas
+      ref={ref}
+      style={{ width: '100vw', height: '100vh' }}
+      role="img"
+      aria-label="Physics simulation of bouncing balls"
+    />
+  );
 };
 
 export default observer(Simulation);
