@@ -72,7 +72,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
                     });
                   }}
                 />
-                cm ,{' '}
+                cm,{' '}
                 <NumField
                   aria-label="Position-Y (cm)"
                   css={{ width: `${fToStr(position.y * 100).length}ch` }}
@@ -83,7 +83,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
                     });
                   }}
                 />
-                cm )
+                cm)
               </Label>
             ))
             .getOrElseValue(<></>)}
@@ -102,7 +102,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
                       });
                     }}
                   />
-                  cm/s ,{' '}
+                  cm/s,{' '}
                   <NumField
                     aria-label="Velocity-Y (cm/s)"
                     css={{ width: `${fToStr(velocity.y * 100).length}ch` }}
@@ -113,7 +113,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
                       });
                     }}
                   />
-                  cm/s )
+                  cm/s)
                 </Label>
                 <Label>
                   Speed:{' '}

@@ -1,4 +1,4 @@
-import {when} from '@execonline-inc/maybe-adapter';
+import { when } from '@execonline-inc/maybe-adapter';
 import { just, Maybe, nothing } from 'maybeasy';
 import SimulationStore from '../App/Simulation/Store';
 import { Entity, Shape, System } from '../App/Simulation/Types';
@@ -8,16 +8,16 @@ const g = new Vector(0, -9.8);
 
 type HasPotentialEnergy = { mass: number; position: Vector; shape: Shape };
 
-const entityPotentialEnergy = (entity: HasPotentialEnergy, gg: Vector): number =>
-  gg.magnitude * entity.mass * (entity.position.y - entity.shape.radius);
+const entityPotentialEnergy = (entity: HasPotentialEnergy): number =>
+  g.magnitude * entity.mass * (entity.position.y - entity.shape.radius);
 
 type HasKineticEnergy = { mass: number; velocity: Vector };
 
 const entityKineticEnergy = (entity: HasKineticEnergy): number =>
   0.5 * entity.mass * entity.velocity.magnitude ** 2;
 
-const entityEnergy = (entity: HasPotentialEnergy & HasKineticEnergy, gg: Vector) =>
-  entityPotentialEnergy(entity, gg) + entityKineticEnergy(entity);
+const entityEnergy = (entity: HasPotentialEnergy & HasKineticEnergy) =>
+  entityPotentialEnergy(entity) + entityKineticEnergy(entity);
 
 export const newtonsFirstLaw = (entity: Entity, dt: number): Maybe<Entity> =>
   just({})
@@ -28,30 +28,29 @@ export const newtonsFirstLaw = (entity: Entity, dt: number): Maybe<Entity> =>
       position: just(position.plus(velocity.times(dt))),
     }));
 
-export const gravity = (entity: Entity, dt: number, gg: Vector): Maybe<Entity> =>
+export const gravity = (entity: Entity, dt: number): Maybe<Entity> =>
   just({})
     .assign('position', entity.position)
     .assign('velocity', entity.velocity)
     .map(({ position, velocity }) => ({
       ...entity,
-      position: just(position.plus(gg.times(dt ** 2).divideBy(2))),
-      velocity: just(velocity.plus(gg.times(dt))),
+      position: just(position.plus(g.times(dt ** 2).divideBy(2))),
+      velocity: just(velocity.plus(g.times(dt))),
     }));
 
 const flatInelasticCollision = (
   rc: number,
   position: Vector,
   velocity: Vector,
-  shape: Shape,
-  gg: Vector
+  shape: Shape
 ): Pick<Entity, 'position' | 'velocity'> => {
   // Reduce amount of conserved speed at higher speeds
   const conservedSpeed = rc - 0.2 + 0.2 / (1 + Math.exp(0.13 * Math.abs(velocity.magnitude) - 2));
   // TODO: Remove momentumCost? It reduces jittering when the ball is stopped.
   const momentumCost = 0.1; // m / s
-  const energy = entityEnergy({ mass: 1, position, shape, velocity }, gg);
+  const energy = entityEnergy({ mass: 1, position, shape, velocity });
   position.y = shape.radius + conservedSpeed * (shape.radius - position.y);
-  const potentialEnergy = entityPotentialEnergy({ mass: 1, position, shape }, gg);
+  const potentialEnergy = entityPotentialEnergy({ mass: 1, position, shape });
   const kineticEnergy = energy - potentialEnergy;
   const speed = Math.sqrt(2 * kineticEnergy) || 0.001;
   velocity = velocity
@@ -69,12 +68,11 @@ const flatInelasticCollision = (
 const flatElasticCollision = (
   position: Vector,
   velocity: Vector,
-  shape: Shape,
-  gg: Vector
+  shape: Shape
 ): Pick<Entity, 'position' | 'velocity'> => {
-  const energy = entityEnergy({ mass: 1, position, shape, velocity }, gg);
+  const energy = entityEnergy({ mass: 1, position, shape, velocity });
   position.y = 2 * shape.radius - position.y;
-  const potentialEnergy = entityPotentialEnergy({ mass: 1, position, shape }, gg);
+  const potentialEnergy = entityPotentialEnergy({ mass: 1, position, shape });
   const kineticEnergy = energy - potentialEnergy;
   const speed = Math.sqrt(2 * kineticEnergy) || 0.001;
   velocity = velocity.withMagnitude(speed).reflection(new Vector(0, 1));
@@ -85,7 +83,7 @@ const flatElasticCollision = (
   };
 };
 
-export const flatCollision = (entity: Entity, gg: Vector): Maybe<Entity> =>
+export const flatCollision = (entity: Entity): Maybe<Entity> =>
   just({})
     .assign('position', entity.position)
     .assign('shape', entity.shape)
@@ -95,11 +93,11 @@ export const flatCollision = (entity: Entity, gg: Vector): Maybe<Entity> =>
       entity.restitutionCoefficient
         .map((rc) => ({
           ...entity,
-          ...flatInelasticCollision(rc, position, velocity, shape, gg),
+          ...flatInelasticCollision(rc, position, velocity, shape),
         }))
         .getOrElse(() => ({
           ...entity,
-          ...flatElasticCollision(position, velocity, shape, gg),
+          ...flatElasticCollision(position, velocity, shape),
         }))
     );
 
@@ -136,14 +134,13 @@ const addTrackingEntity = (store: SimulationStore, entity: Entity) =>
 
 export const physicsSystem: System = (store) => {
   store.contextVars.running.do(() => {
-    const gg = store.contextVars.spacePressedAt.map((sp) => g.times(10 * sp + 1)).getOrElseValue(g);
     store.entities.forEach((entity) =>
       entity.trackPosition.do(() => addTrackingEntity(store, entity))
     );
 
     store.withEntities((entity) => newtonsFirstLaw(entity, store.contextVars.dt));
-    store.withEntities((entity) => gravity(entity, store.contextVars.dt, gg));
-    store.withEntities((entity) => flatCollision(entity, gg));
+    store.withEntities((entity) => gravity(entity, store.contextVars.dt));
+    store.withEntities((entity) => flatCollision(entity));
     store.withEntities((entity) => airResistance(entity, store.contextVars.dt));
   });
 };
