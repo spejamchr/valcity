@@ -1,21 +1,16 @@
-import { just } from 'maybeasy';
+import { mapMaybe } from '@execonline-inc/collections';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { filterMap } from '../../MaybeHelpers';
 import { styled, theme } from '../../stitches.config';
 import ClickToShow from '../ClickToShow';
 import Info from '../Info';
 import SimulationStore from '../Simulation/Store';
 import { Entity } from '../Simulation/Types';
+import ShowEntity from './ShowEntity';
 
 interface Props {
   store: SimulationStore;
 }
-
-const SideBySide = styled('div', {
-  display: 'flex',
-  justifyContent: 'space-between',
-});
 
 const Control = styled('button', {
   margin: '5px',
@@ -38,29 +33,8 @@ const Display: React.FC<Props> = ({ store }) => (
       ))}
     <Control onClick={store.restart}>Restart</Control>
     <ClickToShow title="State Info">
-      {filterMap(
-        (e: Entity) =>
-          just({ id: e.id })
-            .assign('name', e.name)
-            .assign('color', e.fillStyle.map(String))
-            .assign('position', e.position)
-            .assign('velocity', e.velocity),
-        store.entities
-      ).map(({ id, name, color, position, velocity }) => (
-        <ClickToShow key={id} title={name}>
-          <SideBySide>
-            <div>
-              <p>
-                Position: ({Math.trunc(position.x)}, {Math.trunc(position.y)})
-              </p>
-              <p>
-                Velocity: ({Math.trunc(velocity.x)}, {Math.trunc(velocity.y)})
-              </p>
-              <p>Speed: {Math.trunc(velocity.magnitude)}</p>
-            </div>
-            <span style={{ color, fontSize: 'x-large' }}>⬤</span>
-          </SideBySide>
-        </ClickToShow>
+      {mapMaybe((e: Entity) => e.name.map(() => e), store.entities).map((e) => (
+        <ShowEntity key={e.id} entityId={e.id} store={store} />
       ))}
     </ClickToShow>
   </Info>

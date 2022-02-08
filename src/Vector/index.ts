@@ -18,9 +18,12 @@ export default class Vector {
     scalar > this.magnitude
       ? new Vector(0, 0)
       : this.times((this.magnitude - scalar) / this.magnitude);
-  withMagnitude = (scalar: number): Vector => this.normalized().times(scalar);
+  withMagnitude = (scalar: number): Vector => this.normalized().times(scalar === 0 ? 0.001 : scalar);
   exp = (scalar: number): Vector =>
     this.magnitude === 0 ? this : this.withMagnitude(this.magnitude ** scalar);
+
+  withX = (x: number): Vector => new Vector(x, this.y);
+  withY = (y: number): Vector => new Vector(this.x, y);
 
   toString = (): string => `[${this.x}, ${this.y}]`;
 }

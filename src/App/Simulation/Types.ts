@@ -1,4 +1,4 @@
-import { just, Maybe, nothing } from 'maybeasy';
+import { Maybe, nothing } from 'maybeasy';
 import { CanvasAndContext } from '../../CanvasHelpers';
 import Vector from '../../Vector';
 import SimulationStore from './Store';

@@ -1,7 +1,7 @@
+import {when} from '@execonline-inc/maybe-adapter';
 import { just, Maybe, nothing } from 'maybeasy';
 import SimulationStore from '../App/Simulation/Store';
 import { Entity, Shape, System } from '../App/Simulation/Types';
-import { fromBoolM } from '../MaybeHelpers';
 import Vector from '../Vector';
 
 const g = new Vector(0, -9.8);
@@ -89,7 +89,7 @@ export const flatCollision = (entity: Entity, gg: Vector): Maybe<Entity> =>
   just({})
     .assign('position', entity.position)
     .assign('shape', entity.shape)
-    .andThen((p) => fromBoolM(p.position.y < p.shape.radius).map(() => p))
+    .andThen((p) => when(p.position.y < p.shape.radius, p))
     .assign('velocity', entity.velocity)
     .map(({ position, velocity, shape }) =>
       entity.restitutionCoefficient

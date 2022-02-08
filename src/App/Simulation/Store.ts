@@ -1,9 +1,17 @@
+import { mapMaybe } from '@execonline-inc/collections';
 import { just, Maybe, nothing } from 'maybeasy';
 import { action, computed, observable } from 'mobx';
 import { CanvasAndContext } from '../../CanvasHelpers';
 import fullyAnnotatedObservable from '../../FullyAnnotatedObservable';
-import { filterMap } from '../../MaybeHelpers';
-import { ContextVars, Entity, entityWithInternals, makeState, State, System } from './Types';
+import {
+  Components,
+  ContextVars,
+  Entity,
+  entityWithInternals,
+  makeState,
+  State,
+  System,
+} from './Types';
 
 class SimulationStore {
   public state: State;
@@ -24,6 +32,7 @@ class SimulationStore {
       pause: action,
       run: action,
       restart: action,
+      updateEntity: action,
       entities: computed,
       contextVars: computed,
       minEntityX: computed,
@@ -94,7 +103,7 @@ class SimulationStore {
   };
 
   restart = (): void => {
-    this.state.entities = filterMap(
+    this.state.entities = mapMaybe(
       (e) =>
         e.persistent.map(() => ({
           ...e,
@@ -103,6 +112,10 @@ class SimulationStore {
         })),
       this.state.entities
     );
+  };
+
+  updateEntity = (entityId: number, entity: Partial<Pick<Entity, keyof Components>>): void => {
+    this.withEntities((e) => (e.id === entityId ? { ...e, ...entity } : e));
   };
 
   get entities(): ReadonlyArray<Entity> {
