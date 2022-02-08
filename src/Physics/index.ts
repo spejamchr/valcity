@@ -135,7 +135,7 @@ const addTrackingEntity = (store: SimulationStore, entity: Entity) =>
   });
 
 export const physicsSystem: System = (store) => {
-  store.contextVars.run.do(() => {
+  store.contextVars.running.do(() => {
     const gg = store.contextVars.spacePressedAt.map((sp) => g.times(10 * sp + 1)).getOrElseValue(g);
     store.entities.forEach((entity) =>
       entity.trackPosition.do(() => addTrackingEntity(store, entity))

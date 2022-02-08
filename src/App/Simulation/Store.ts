@@ -2,6 +2,7 @@ import { just, Maybe, nothing } from 'maybeasy';
 import { action, computed, observable } from 'mobx';
 import { CanvasAndContext } from '../../CanvasHelpers';
 import fullyAnnotatedObservable from '../../FullyAnnotatedObservable';
+import { filterMap } from '../../MaybeHelpers';
 import { ContextVars, Entity, entityWithInternals, makeState, State, System } from './Types';
 
 class SimulationStore {
@@ -85,20 +86,23 @@ class SimulationStore {
   };
 
   pause = (): void => {
-    this.state.contextVars.run = nothing();
+    this.state.contextVars.running = nothing();
   };
 
   run = (): void => {
-    this.state.contextVars.run = just(null);
+    this.state.contextVars.running = just(null);
   };
 
   restart = (): void => {
-    this.filterEntities((e) => e.persistent.map(() => true).getOrElseValue(false));
-    this.state.entities = this.state.entities.map((e) => ({
-      ...e,
-      position: e.startingPosition,
-      velocity: e.startingVelocity,
-    }));
+    this.state.entities = filterMap(
+      (e) =>
+        e.persistent.map(() => ({
+          ...e,
+          position: e.startingPosition,
+          velocity: e.startingVelocity,
+        })),
+      this.state.entities
+    );
   };
 
   get entities(): ReadonlyArray<Entity> {

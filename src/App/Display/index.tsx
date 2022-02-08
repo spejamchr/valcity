@@ -2,7 +2,7 @@ import { just } from 'maybeasy';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { filterMap } from '../../MaybeHelpers';
-import { styled } from '../../stitches.config';
+import { styled, theme } from '../../stitches.config';
 import ClickToShow from '../ClickToShow';
 import Info from '../Info';
 import SimulationStore from '../Simulation/Store';
@@ -17,13 +17,26 @@ const SideBySide = styled('div', {
   justifyContent: 'space-between',
 });
 
+const Control = styled('button', {
+  margin: '5px',
+  width: '5em',
+  backgroundColor: theme.colors.base02,
+  border: 'none',
+  color: theme.colors.base04,
+  textDecoration: 'none',
+  display: 'inline-block',
+  fontSize: '16px',
+  cursor: 'pointer',
+});
+
 const Display: React.FC<Props> = ({ store }) => (
   <Info>
-    <ClickToShow title="Controls">
-      <button onClick={store.pause}>Pause</button>
-      <button onClick={store.run}>run</button>
-      <button onClick={store.restart}>Restart</button>
-      </ClickToShow>
+    {store.contextVars.running
+      .map(() => <Control onClick={store.pause}>Pause</Control>)
+      .getOrElse(() => (
+        <Control onClick={store.run}>Run</Control>
+      ))}
+    <Control onClick={store.restart}>Restart</Control>
     <ClickToShow title="State Info">
       {filterMap(
         (e: Entity) =>

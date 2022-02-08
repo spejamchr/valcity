@@ -13,7 +13,7 @@ const ShowHide = styled('button', {
   margin: '5px',
   backgroundColor: theme.colors.base01,
   border: 'none',
-  color: theme.colors.base05,
+  color: theme.colors.base04,
   textAlign: 'left',
   textDecoration: 'none',
   display: 'inline-block',

@@ -79,7 +79,7 @@ export interface ContextVars {
   dt: number;
   spacePressedAt: Maybe<number>;
   canvasAndContext: Maybe<CanvasAndContext>;
-  run: Maybe<null>;
+  running: Maybe<null>;
 }
 
 export const makeContextVars = (): ContextVars => ({
@@ -87,7 +87,7 @@ export const makeContextVars = (): ContextVars => ({
   dt: 0.001,
   spacePressedAt: nothing(),
   canvasAndContext: nothing(),
-  run: just(null),
+  running: nothing(),
 });
 
 // A System runs any action with the whole store
