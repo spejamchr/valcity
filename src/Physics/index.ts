@@ -38,50 +38,36 @@ export const gravity = (entity: Entity, dt: number): Maybe<Entity> =>
       velocity: just(velocity.plus(g.times(dt))),
     }));
 
-const flatInelasticCollision = (
-  rc: number,
-  position: Vector,
-  velocity: Vector,
-  shape: Shape
-): Pick<Entity, 'position' | 'velocity'> => {
-  // Reduce amount of conserved speed at higher speeds
-  const conservedSpeed = rc - 0.2 + 0.2 / (1 + Math.exp(0.13 * Math.abs(velocity.magnitude) - 2));
-  // TODO: Remove momentumCost? It reduces jittering when the ball is stopped.
-  const momentumCost = 0.1; // m / s
-  const energy = entityEnergy({ mass: 1, position, shape, velocity });
-  position.y = shape.radius + conservedSpeed * (shape.radius - position.y);
-  const potentialEnergy = entityPotentialEnergy({ mass: 1, position, shape });
-  const kineticEnergy = energy - potentialEnergy;
-  const speed = Math.sqrt(2 * kineticEnergy) || 0.001;
-  velocity = velocity
-    .withMagnitude(speed)
-    .times(conservedSpeed)
-    .minusMagnitude(momentumCost)
-    .reflection(new Vector(0, 1));
-
-  return {
-    position: just(position),
-    velocity: just(velocity),
-  };
-};
-
 const flatElasticCollision = (
   position: Vector,
   velocity: Vector,
   shape: Shape
 ): Pick<Entity, 'position' | 'velocity'> => {
   const energy = entityEnergy({ mass: 1, position, shape, velocity });
-  position.y = 2 * shape.radius - position.y;
+  position.y = shape.radius;
   const potentialEnergy = entityPotentialEnergy({ mass: 1, position, shape });
   const kineticEnergy = energy - potentialEnergy;
-  const speed = Math.sqrt(2 * kineticEnergy) || 0.001;
-  velocity = velocity.withMagnitude(speed).reflection(new Vector(0, 1));
+  const speedsqrd = 2 * kineticEnergy || 0.00001;
+  const velocityY = Math.sqrt(Math.max(speedsqrd - velocity.x ** 2, 0));
+  velocity = velocity.withY(velocityY);
 
   return {
     position: just(position),
     velocity: just(velocity),
   };
 };
+
+const applyRestitutionCoefficient = (entity: Entity, initVelocity: Vector): Entity =>
+  just({})
+    .assign('v', entity.velocity)
+    .assign('rc', entity.restitutionCoefficient)
+    .map(({ v, rc }) => {
+      const conservedSpeed =
+        rc - 0.2 + 0.2 / (1 + Math.exp(0.13 * Math.abs(initVelocity.magnitude) - 2));
+      const velocity: Maybe<Vector> = just(v.times(conservedSpeed));
+      return { ...entity, velocity };
+    })
+    .getOrElseValue(entity);
 
 export const flatCollision = (entity: Entity): Maybe<Entity> =>
   just({})
@@ -89,17 +75,10 @@ export const flatCollision = (entity: Entity): Maybe<Entity> =>
     .assign('shape', entity.shape)
     .andThen((p) => when(p.position.y < p.shape.radius, p))
     .assign('velocity', entity.velocity)
-    .map(({ position, velocity, shape }) =>
-      entity.restitutionCoefficient
-        .map((rc) => ({
-          ...entity,
-          ...flatInelasticCollision(rc, position, velocity, shape),
-        }))
-        .getOrElse(() => ({
-          ...entity,
-          ...flatElasticCollision(position, velocity, shape),
-        }))
-    );
+    .map(({ position, velocity, shape }) => {
+      const afterCollision = { ...entity, ...flatElasticCollision(position, velocity, shape) };
+      return applyRestitutionCoefficient(afterCollision, velocity);
+    });
 
 export const airResistance = (entity: Entity, dt: number): Maybe<Entity> =>
   just({})
