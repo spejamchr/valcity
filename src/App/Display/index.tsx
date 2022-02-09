@@ -1,18 +1,20 @@
 import { mapMaybe } from '@execonline-inc/collections';
+import { just, nothing } from 'maybeasy';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { styled, theme } from '../../stitches.config';
+import Vector from '../../Vector';
 import ClickToShow from '../ClickToShow';
 import Info from '../Info';
 import SimulationStore from '../Simulation/Store';
-import { Entity } from '../Simulation/Types';
+import { circleShape, Entity } from '../Simulation/Types';
 import ShowEntity from './ShowEntity';
 
 interface Props {
   store: SimulationStore;
 }
 
-const Control = styled('button', {
+export const Control = styled('button', {
   margin: '5px',
   width: '5em',
   backgroundColor: theme.colors.base02,
@@ -33,9 +35,29 @@ const Display: React.FC<Props> = ({ store }) => (
       ))}
     <Control onClick={store.restart}>Restart</Control>
     <ClickToShow title="State Info">
-      {mapMaybe((e: Entity) => e.name.map(() => e), store.entities).map((e) => (
-        <ShowEntity key={e.id} entityId={e.id} store={store} />
-      ))}
+      <>
+        {mapMaybe((e: Entity) => e.name.map(() => e), store.entities).map((e) => (
+          <ShowEntity key={e.id} entityId={e.id} store={store} />
+        ))}
+        <Control
+          onClick={() =>
+            store.addEntity({
+              position: just(new Vector(0, 0.121)),
+              name: just(''),
+              velocity: just(new Vector(5, 5)),
+              mass: nothing(),
+              shape: just(circleShape(0.121)),
+              fillStyle: just(theme.colors.base0B.value),
+              dragCoefficient: nothing(),
+              restitutionCoefficient: nothing(),
+              trackPosition: nothing(),
+              persistent: just(null),
+            })
+          }
+        >
+          Add
+        </Control>
+      </>
     </ClickToShow>
   </Info>
 );

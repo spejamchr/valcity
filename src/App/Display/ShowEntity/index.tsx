@@ -2,6 +2,7 @@ import { find } from '@execonline-inc/collections';
 import { just, nothing } from 'maybeasy';
 import { observer } from 'mobx-react';
 import * as React from 'react';
+import { Control } from '..';
 import { styled, theme } from '../../../stitches.config';
 import Vector from '../../../Vector';
 import ClickToShow from '../../ClickToShow';
@@ -19,10 +20,12 @@ const Input = styled('input', {
   color: theme.colors.base05,
   backgroundColor: theme.colors.base02,
   border: 'none',
+  minWidth: '1ch',
 });
 
 const NumSpan = styled('span', {
   fontFamily: 'monospace',
+  fontSize: 15,
 });
 
 const fToStr = (f: number) => Math.trunc(f).toString();
@@ -31,7 +34,7 @@ const decimals = (f: number) => Math.min(Math.trunc(f), 999).toString();
 
 const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
   find((e) => e.id === entityId, store.entities)
-    .map(( entity) => (
+    .map((entity) => (
       <ClickToShow title={entity.name.getOrElse(() => `Entity #${entity.id}`)}>
         <>
           {entity.fillStyle
@@ -58,7 +61,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
             title="Trace Path"
             entity={entity}
             store={store}
-            form={fn => fn('trackPosition', just(null), () => <>Yes</>)}
+            form={(fn) => fn('trackPosition', just(null), () => <>Yes</>)}
           />
 
           <RenderComponent
@@ -87,31 +90,37 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
             entity={entity}
             store={store}
             form={(fn) =>
-              fn('position', just(new Vector(0, 1)), (position) => (
+              fn('position', just(new Vector(0, 0.121)), (position) => (
                 <>
                   (
-                  <Input
-                    aria-label="Position-X (cm)"
-                    css={{ width: `${fToStr(position.x * 100).length}ch` }}
-                    value={fToStr(position.x * 100)}
-                    onChange={(e) =>
-                      store.updateEntity(entity.id, {
-                        position: just(position.withX(Number(e.target.value) / 100)),
-                      })
-                    }
-                  />
-                  cm,{' '}
-                  <Input
-                    aria-label="Position-Y (cm)"
-                    css={{ width: `${fToStr(position.y * 100).length}ch` }}
-                    value={fToStr(position.y * 100)}
-                    onChange={(e) =>
-                      store.updateEntity(entity.id, {
-                        position: just(position.withY(Number(e.target.value) / 100)),
-                      })
-                    }
-                  />
-                  cm)
+                  <label>
+                    x:{' '}
+                    <Input
+                      aria-label="Position-X (cm)"
+                      css={{ width: `${fToStr(position.x * 100).length}ch` }}
+                      value={fToStr(position.x * 100)}
+                      onChange={(e) =>
+                        store.updateEntity(entity.id, {
+                          position: just(position.withX(Number(e.target.value) / 100)),
+                        })
+                      }
+                    />
+                    cm,
+                  </label>{' '}
+                  <label>
+                    y:{' '}
+                    <Input
+                      aria-label="Position-Y (cm)"
+                      css={{ width: `${fToStr(position.y * 100).length}ch` }}
+                      value={fToStr(position.y * 100)}
+                      onChange={(e) =>
+                        store.updateEntity(entity.id, {
+                          position: just(position.withY(Number(e.target.value) / 100)),
+                        })
+                      }
+                    />
+                    cm)
+                  </label>
                 </>
               ))
             }
@@ -122,31 +131,37 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
             entity={entity}
             store={store}
             form={(fn) =>
-              fn('velocity', just(new Vector(0.001, 0.001)), (velocity) => (
+              fn('velocity', just(new Vector(5, 5)), (velocity) => (
                 <>
                   (
-                  <Input
-                    aria-label="Velocity-X (cm/s)"
-                    css={{ width: `${fToStr(velocity.x * 100).length}ch` }}
-                    value={fToStr(velocity.x * 100)}
-                    onChange={(e) =>
-                      store.updateEntity(entity.id, {
-                        velocity: just(velocity.withX(Number(e.target.value) / 100)),
-                      })
-                    }
-                  />
-                  cm/s,{' '}
-                  <Input
-                    aria-label="Velocity-Y (cm/s)"
-                    css={{ width: `${fToStr(velocity.y * 100).length}ch` }}
-                    value={fToStr(velocity.y * 100)}
-                    onChange={(e) =>
-                      store.updateEntity(entity.id, {
-                        velocity: just(velocity.withY(Number(e.target.value) / 100)),
-                      })
-                    }
-                  />
-                  cm/s)
+                  <label>
+                    x:{' '}
+                    <Input
+                      aria-label="Velocity-X (cm/s)"
+                      css={{ width: `${fToStr(velocity.x * 100).length}ch` }}
+                      value={fToStr(velocity.x * 100)}
+                      onChange={(e) =>
+                        store.updateEntity(entity.id, {
+                          velocity: just(velocity.withX(Number(e.target.value) / 100)),
+                        })
+                      }
+                    />
+                    cm/s,
+                  </label>{' '}
+                  <label>
+                    y:{' '}
+                    <Input
+                      aria-label="Velocity-Y (cm/s)"
+                      css={{ width: `${fToStr(velocity.y * 100).length}ch` }}
+                      value={fToStr(velocity.y * 100)}
+                      onChange={(e) =>
+                        store.updateEntity(entity.id, {
+                          velocity: just(velocity.withY(Number(e.target.value) / 100)),
+                        })
+                      }
+                    />
+                    cm/s)
+                  </label>
                 </>
               ))
             }
@@ -157,7 +172,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
             entity={entity}
             store={store}
             form={(fn) =>
-              fn('velocity', just(new Vector(0.001, 0.001)), (velocity) => (
+              fn('velocity', just(new Vector(5, 5)), (velocity) => (
                 <>
                   <Input
                     aria-label="Speed (cm/s)"
@@ -222,6 +237,8 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
               ))
             }
           />
+
+          <Control onClick={() => store.filterEntities((e) => e.id !== entity.id)}>Remove</Control>
         </>
       </ClickToShow>
     ))
