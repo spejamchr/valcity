@@ -125,7 +125,7 @@ class SimulationStore {
     this.withEntities((e) => (e.id === entityId ? { ...e, ...entity } : e));
   };
 
-  get entities(): ReadonlyArray<Entity> {
+  get entities(): ReadonlyArray<EntityWithInternals> {
     return this.state.entities;
   }
 

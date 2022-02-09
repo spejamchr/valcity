@@ -4,7 +4,6 @@ import { observer } from 'mobx-react';
 import * as React from 'react';
 import { Control } from '..';
 import { styled, theme } from '../../../stitches.config';
-import Vector from '../../../Vector';
 import ClickToShow from '../../ClickToShow';
 import SimulationStore from '../../Simulation/Store';
 import FillStylePicker from './FillStylePicker';
@@ -92,7 +91,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
             entity={entity}
             store={store}
             form={(fn) =>
-              fn('position', just(new Vector(0, 0.121)), (position) => (
+              fn('position', entity.startingPosition, (position) => (
                 <>
                   (
                   <label>
@@ -135,7 +134,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
             entity={entity}
             store={store}
             form={(fn) =>
-              fn('velocity', just(new Vector(15, 15)), (velocity) => (
+              fn('velocity', entity.startingVelocity, (velocity) => (
                 <>
                   (
                   <label>
@@ -178,7 +177,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
             entity={entity}
             store={store}
             form={(fn) =>
-              fn('velocity', just(new Vector(15, 15)), (velocity) => (
+              fn('velocity', entity.startingVelocity, (velocity) => (
                 <>
                   <Input
                     aria-label="Speed (cm/s)"
