@@ -69,7 +69,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
             entity={entity}
             store={store}
             form={(fn) =>
-              fn('mass', just(1), (mass) => (
+              fn('mass', just(0.6), (mass) => (
                 <>
                   <Input
                     aria-label="Mass (g)"
@@ -195,7 +195,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
             entity={entity}
             store={store}
             form={(fn) =>
-              fn('dragCoefficient', just(0), (Cd) => (
+              fn('dragCoefficient', just(0.47), (Cd) => (
                 <>
                   <NumSpan>0.</NumSpan>
                   <Input
@@ -218,7 +218,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
             entity={entity}
             store={store}
             form={(fn) =>
-              fn('restitutionCoefficient', just(0.999), (CoR) => (
+              fn('restitutionCoefficient', just(0.77), (CoR) => (
                 <>
                   <NumSpan>0.</NumSpan>
                   <Input
