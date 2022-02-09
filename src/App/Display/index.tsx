@@ -45,7 +45,7 @@ const Display: React.FC<Props> = ({ store }) => (
               position: just(new Vector(0, 0.121)),
               name: just('New Item'),
               velocity: just(new Vector(15, 15)),
-              mass: nothing(),
+              mass: just(0.6),
               shape: just(circleShape(0.121)),
               fillStyle: just(theme.colors.base0B.value),
               dragCoefficient: nothing(),
