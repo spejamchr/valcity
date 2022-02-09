@@ -28,6 +28,36 @@ const traceRenderSystem: System = (store) => {
     });
 };
 
+const velocityRenderSystem: System = (store) => {
+  just({})
+    .assign('scale', store.scale)
+    .assign('minViewX', store.minViewX)
+    .do(({ scale, minViewX }) =>
+      store.entities.forEach((entity) =>
+        just({})
+          .assign('start', entity.position)
+          .assign('velocity', entity.velocity)
+          .assign('fillStyle', entity.fillStyle)
+          .assign('canvasAndContext', store.contextVars.canvasAndContext)
+          .do(({ start, velocity, fillStyle, canvasAndContext: { canvas, context } }) => {
+            const point = start.plus(velocity.divideBy(10))
+            const xPixStart = (start.x - minViewX) * scale;
+            const yPixStart = canvas.height - (start.y - store.minViewY) * scale;
+            const xPixPoint = (point.x - minViewX) * scale;
+            const yPixPoint = canvas.height - (point.y - store.minViewY) * scale;
+
+            context.beginPath();
+            context.moveTo(xPixStart, yPixStart);
+            context.lineTo(xPixPoint, yPixPoint);
+            context.closePath()
+            context.strokeStyle = fillStyle;
+            context.stroke()
+            context.fill();
+          })
+      )
+    );
+}
+
 const entityRenderSystem: System = (store) => {
   just({})
     .assign('scale', store.scale)
@@ -92,5 +122,6 @@ export const renderSystem: System = (store) => {
   backgroundRenderSystem(store);
   lineRenderSystem(store);
   traceRenderSystem(store);
+  velocityRenderSystem(store);
   entityRenderSystem(store);
 };

@@ -104,6 +104,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
                       onChange={(e) =>
                         store.updateEntity(entity.id, {
                           position: just(position.withX(Number(e.target.value) / 100)),
+                          startingPosition: just(position.withX(Number(e.target.value) / 100)),
                         })
                       }
                     />
@@ -118,6 +119,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
                       onChange={(e) =>
                         store.updateEntity(entity.id, {
                           position: just(position.withY(Number(e.target.value) / 100)),
+                          startingPosition: just(position.withY(Number(e.target.value) / 100)),
                         })
                       }
                     />
@@ -145,6 +147,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
                       onChange={(e) =>
                         store.updateEntity(entity.id, {
                           velocity: just(velocity.withX(Number(e.target.value) / 100)),
+                          startingVelocity: just(velocity.withX(Number(e.target.value) / 100)),
                         })
                       }
                     />
@@ -159,6 +162,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
                       onChange={(e) =>
                         store.updateEntity(entity.id, {
                           velocity: just(velocity.withY(Number(e.target.value) / 100)),
+                          startingVelocity: just(velocity.withY(Number(e.target.value) / 100)),
                         })
                       }
                     />

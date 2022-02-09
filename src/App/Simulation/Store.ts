@@ -4,9 +4,9 @@ import { action, computed, observable } from 'mobx';
 import { CanvasAndContext } from '../../CanvasHelpers';
 import fullyAnnotatedObservable from '../../FullyAnnotatedObservable';
 import {
-  Components,
   ContextVars,
   Entity,
+  EntityWithInternals,
   entityWithInternals,
   makeState,
   State,
@@ -60,8 +60,8 @@ class SimulationStore {
   };
 
   addTrace = (trace: Trace): void => {
-    this.state.traces.push(trace)
-  }
+    this.state.traces.push(trace);
+  };
 
   runSystems = (): void => {
     this.state.systems.forEach((system) => system(this));
@@ -121,7 +121,7 @@ class SimulationStore {
     this.state.traces = [];
   };
 
-  updateEntity = (entityId: number, entity: Partial<Pick<Entity, keyof Components>>): void => {
+  updateEntity = (entityId: number, entity: Partial<EntityWithInternals>): void => {
     this.withEntities((e) => (e.id === entityId ? { ...e, ...entity } : e));
   };
 
