@@ -15,6 +15,7 @@ interface Props {
 
 const Input = styled('input', {
   fontFamily: 'monospace',
+  fontSize: 15,
   color: theme.colors.base05,
   backgroundColor: theme.colors.base02,
   border: 'none',
@@ -51,6 +52,13 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
                 />
               ))
             }
+          />
+
+          <RenderComponent
+            title="Trace Path"
+            entity={entity}
+            store={store}
+            form={fn => fn('trackPosition', just(null), () => <>Yes</>)}
           />
 
           <RenderComponent

@@ -24,9 +24,9 @@ export const createStore = (): SimulationStore => {
   });
 
   store.addEntity({
-    position: just(new Vector(0.0, 1)),
+    position: just(new Vector(0.0, 0.121)),
     velocity: just(new Vector(5, 5)),
-    shape: just(circleShape(0.76 / (2 * Math.PI))),
+    shape: just(circleShape(0.121)),
     fillStyle: just(theme.colors.base08.value),
     mass: just(0.6),
     dragCoefficient: nothing(),
@@ -37,9 +37,9 @@ export const createStore = (): SimulationStore => {
   });
 
   store.addEntity({
-    position: just(new Vector(0.1, 1)),
+    position: just(new Vector(0.1, 0.121)),
     velocity: just(new Vector(5, 5)),
-    shape: just(circleShape(0.76 / (2 * Math.PI))),
+    shape: just(circleShape(0.121)),
     fillStyle: just(theme.colors.base0D.value),
     mass: just(0.6),
     dragCoefficient: just(0.47),
@@ -50,9 +50,9 @@ export const createStore = (): SimulationStore => {
   });
 
   store.addEntity({
-    position: just(new Vector(0.2, 1)),
+    position: just(new Vector(0.2, 0.121)),
     velocity: just(new Vector(5, 5)),
-    shape: just(circleShape(0.76 / (2 * Math.PI))),
+    shape: just(circleShape(0.121)),
     fillStyle: just(theme.colors.base0B.value),
     mass: just(0.6),
     dragCoefficient: just(0.47),

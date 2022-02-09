@@ -1,7 +1,7 @@
 import { just, Maybe, nothing } from 'maybeasy';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { styled } from '../../../stitches.config';
+import { styled, theme } from '../../../stitches.config';
 import SimulationStore from '../../Simulation/Store';
 import { Components, Entity } from '../../Simulation/Types';
 import UpdateButton from './UpdateEntity';
@@ -10,12 +10,24 @@ const ComponentRow = styled('div', {
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  minWidth: 250,
+  minWidth: 280,
   padding: 1,
 });
 
 const Label = styled('label', {
   display: 'block',
+});
+
+const None = styled('span', {
+  color: theme.colors.base0D,
+});
+
+const ActiveTitle = styled('span', {
+  color: theme.colors.base05,
+});
+
+const InactiveTitle = styled('span', {
+  color: theme.colors.base04,
 });
 
 interface Props {
@@ -59,7 +71,12 @@ const RenderComponent: React.FC<Props> = ({ store, entity, title, form }) =>
             )
             .getOrElseValue(<></>)}
           <Label>
-            {title}: {maybeValue.map(formFn).getOrElseValue(<></>)}
+            {maybeValue
+              .map(() => <ActiveTitle>{title}</ActiveTitle>)
+              .getOrElse(() => (
+                <InactiveTitle>{title}</InactiveTitle>
+              ))}
+            : {maybeValue.map(formFn).getOrElseValue(<None>(none)</None>)}
           </Label>
         </>
       </ComponentRow>
