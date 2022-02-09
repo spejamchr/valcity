@@ -118,6 +118,7 @@ class SimulationStore {
         })),
       this.state.entities
     );
+    this.state.traces = [];
   };
 
   updateEntity = (entityId: number, entity: Partial<Pick<Entity, keyof Components>>): void => {
