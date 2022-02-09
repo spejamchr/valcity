@@ -7,6 +7,7 @@ import { styled, theme } from '../../../stitches.config';
 import Vector from '../../../Vector';
 import ClickToShow from '../../ClickToShow';
 import SimulationStore from '../../Simulation/Store';
+import FillStylePicker from './FillStylePicker';
 import RenderComponent from './RenderComponent';
 
 interface Props {
@@ -38,8 +39,9 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
       <ClickToShow title={entity.name.getOrElse(() => `Entity #${entity.id}`)}>
         <>
           {entity.fillStyle
-            .map((fs) => <span style={{ color: fs.toString(), float: 'right' }}>⬤</span>)
+            .map((fs) => <FillStylePicker fillStyle={fs} store={store} entityId={entity.id} />)
             .getOrElseValue(<></>)}
+
           <RenderComponent
             title="Name"
             entity={entity}
