@@ -16,14 +16,28 @@ const traceRenderSystem: System = (store) => {
     .assign('minViewX', store.minViewX)
     .assign('cc', store.contextVars.canvasAndContext)
     .do(({ scale, minViewX, cc: { canvas, context } }) => {
-      store.state.traces.forEach((trace) => {
-        const xPix = (trace.position.x - minViewX) * scale;
-        const yPix = canvas.height - (trace.position.y - store.minViewY) * scale;
+      const ids = store.state.traces.reduce(
+        (ids: number[], trace) => (ids.indexOf(trace.id) === -1 ? ids.concat(trace.id) : ids),
+        []
+      );
+      ids.forEach((id) => {
+        store.state.traces
+          .filter((trace) => trace.id === id)
+          .forEach((trace, i, a) => {
+            if (i + 1 < a.length) {
+              const xPixStart = (trace.position.x - minViewX) * scale;
+              const yPixStart = canvas.height - (trace.position.y - store.minViewY) * scale;
+              const xPixEnd = (a[i + 1].position.x - minViewX) * scale;
+              const yPixEnd = canvas.height - (a[i + 1].position.y - store.minViewY) * scale;
 
-        context.beginPath();
-        context.arc(xPix, yPix, trace.shape.radius * scale, 0, 2 * Math.PI);
-        context.fillStyle = trace.fillStyle;
-        context.fill();
+              context.beginPath();
+              context.moveTo(xPixStart, yPixStart);
+              context.lineTo(xPixEnd, yPixEnd);
+              context.closePath();
+              context.strokeStyle = trace.fillStyle;
+              context.stroke();
+            }
+          });
       });
     });
 };
@@ -40,7 +54,7 @@ const velocityRenderSystem: System = (store) => {
           .assign('fillStyle', entity.fillStyle)
           .assign('canvasAndContext', store.contextVars.canvasAndContext)
           .do(({ start, velocity, fillStyle, canvasAndContext: { canvas, context } }) => {
-            const point = start.plus(velocity.divideBy(10))
+            const point = start.plus(velocity.divideBy(10));
             const xPixStart = (start.x - minViewX) * scale;
             const yPixStart = canvas.height - (start.y - store.minViewY) * scale;
             const xPixPoint = (point.x - minViewX) * scale;
@@ -49,14 +63,13 @@ const velocityRenderSystem: System = (store) => {
             context.beginPath();
             context.moveTo(xPixStart, yPixStart);
             context.lineTo(xPixPoint, yPixPoint);
-            context.closePath()
+            context.closePath();
             context.strokeStyle = fillStyle;
-            context.stroke()
-            context.fill();
+            context.stroke();
           })
       )
     );
-}
+};
 
 const entityRenderSystem: System = (store) => {
   just({})

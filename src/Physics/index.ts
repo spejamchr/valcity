@@ -98,9 +98,8 @@ export const airResistance = (entity: Entity, dt: number): Maybe<Entity> =>
     });
 
 const addTrackingEntity = (store: SimulationStore, entity: Entity) =>
-  just({})
+  just({id: entity.id})
     .assign('position', entity.position)
-    .assign('shape', entity.shape)
     .assign('fillStyle', entity.fillStyle)
     .do(store.addTrace);
 
