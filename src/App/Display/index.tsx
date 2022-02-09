@@ -59,6 +59,13 @@ const Display: React.FC<Props> = ({ store }) => (
         </Control>
       </>
     </ClickToShow>
+    <ClickToShow title="About">
+      <p>
+        Made by <a href="https://github.com/spejamchr">Spencer Christiansen</a> on{' '}
+        <a href="https://github.com/spejamchr/valcity">GitHub</a>.
+      </p>
+      <p>For fun :)</p>
+    </ClickToShow>
   </Info>
 );
 

@@ -11,6 +11,9 @@ const Info = styled('div', {
   color: theme.colors.base05,
   paddingX: 30,
   paddingY: 10,
+  'a:link': { color: theme.colors.base0D },
+  'a:visited': { color: theme.colors.base0E },
+  'a:active': { color: theme.colors.base08 },
 });
 
 export default observer(Info);
