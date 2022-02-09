@@ -4,7 +4,7 @@ import * as React from 'react';
 import { styled } from '../../../stitches.config';
 import SimulationStore from '../../Simulation/Store';
 import { Components, Entity } from '../../Simulation/Types';
-import makeUpdateButton from './MakeUpdateEntity';
+import UpdateButton from './UpdateEntity';
 
 const ComponentRow = styled('div', {
   display: 'flex',
@@ -33,7 +33,6 @@ interface Props {
 
 const RenderComponent: React.FC<Props> = ({ store, entity, title, form }) =>
   form((key, defaultValue, formFn) => {
-    const UpdateButton = makeUpdateButton(entity.id, store);
     const maybeValue: Maybe<Components[typeof key]> = entity[key] as Maybe<Components[typeof key]>;
     return (
       <ComponentRow>
@@ -41,8 +40,22 @@ const RenderComponent: React.FC<Props> = ({ store, entity, title, form }) =>
           {defaultValue
             .map((value) =>
               maybeValue
-                .map(() => <UpdateButton type="remove" update={{ [key]: nothing() }} />)
-                .getOrElse(() => <UpdateButton type="add" update={{ [key]: just(value) }} />)
+                .map(() => (
+                  <UpdateButton
+                    type="remove"
+                    update={{ [key]: nothing() }}
+                    entityId={entity.id}
+                    store={store}
+                  />
+                ))
+                .getOrElse(() => (
+                  <UpdateButton
+                    type="add"
+                    update={{ [key]: just(value) }}
+                    entityId={entity.id}
+                    store={store}
+                  />
+                ))
             )
             .getOrElseValue(<></>)}
           <Label>
@@ -54,11 +67,3 @@ const RenderComponent: React.FC<Props> = ({ store, entity, title, form }) =>
   });
 
 export default observer(RenderComponent);
-
-export const makeRenderComponent = (
-  store: SimulationStore,
-  entity: Entity
-): React.FC<Omit<Props, 'store' | 'entity'>> =>
-  observer(({ title, form }) => (
-    <RenderComponent store={store} entity={entity} title={title} form={form} />
-  ));

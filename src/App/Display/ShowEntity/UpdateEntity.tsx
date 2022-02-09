@@ -2,9 +2,11 @@ import { styled, theme } from '../../../stitches.config';
 import SimulationStore from '../../Simulation/Store';
 import { Components, Entity } from '../../Simulation/Types';
 
-interface UpdateButtonProps {
+interface Props {
   update: Partial<Pick<Entity, keyof Components>>;
   type: 'add' | 'remove';
+  entityId: number;
+  store: SimulationStore;
 }
 
 const Button = styled('button', {
@@ -19,10 +21,7 @@ const Button = styled('button', {
   cursor: 'pointer',
 });
 
-const makeUpdateButton = (
-  entityId: number,
-  store: SimulationStore
-): React.FC<UpdateButtonProps> => ({ update, type }) => (
+const UpdateButton: React.FC<Props> = ({ update, type, entityId, store }) => (
   <Button
     css={{ color: type === 'add' ? theme.colors.base0B : theme.colors.base08 }}
     onClick={() => store.updateEntity(entityId, update)}
@@ -31,4 +30,4 @@ const makeUpdateButton = (
   </Button>
 );
 
-export default makeUpdateButton;
+export default UpdateButton;
