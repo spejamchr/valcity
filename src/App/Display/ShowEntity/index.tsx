@@ -187,6 +187,9 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
                     onChange={(e) =>
                       store.updateEntity(entity.id, {
                         velocity: just(velocity.withMagnitude(Number(e.target.value) / 100)),
+                        startingVelocity: just(
+                          velocity.withMagnitude(Number(e.target.value) / 100)
+                        ),
                       })
                     }
                   />
