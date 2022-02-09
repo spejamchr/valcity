@@ -93,14 +93,18 @@ export const makeContextVars = (): ContextVars => ({
 // A System runs any action with the whole store
 export type System = (store: SimulationStore) => void;
 
+export type Trace = Pick<Components, 'position' | 'shape' | 'fillStyle'>
+
 export interface State {
   entities: ReadonlyArray<EntityWithInternals>;
+  traces: Array<Trace>;
   contextVars: ContextVars;
   systems: ReadonlyArray<System>;
 }
 
 export const makeState = (): State => ({
   entities: [],
+  traces: [],
   contextVars: makeContextVars(),
   systems: [],
 });

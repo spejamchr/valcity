@@ -10,6 +10,24 @@ const backgroundRenderSystem: System = (store) => {
   });
 };
 
+const traceRenderSystem: System = (store) => {
+  just({})
+    .assign('scale', store.scale)
+    .assign('minViewX', store.minViewX)
+    .assign('cc', store.contextVars.canvasAndContext)
+    .do(({ scale, minViewX, cc: { canvas, context } }) => {
+      store.state.traces.forEach((trace) => {
+        const xPix = (trace.position.x - minViewX) * scale;
+        const yPix = canvas.height - (trace.position.y - store.minViewY) * scale;
+
+        context.beginPath();
+        context.arc(xPix, yPix, trace.shape.radius * scale, 0, 2 * Math.PI);
+        context.fillStyle = trace.fillStyle;
+        context.fill();
+      });
+    });
+};
+
 const entityRenderSystem: System = (store) => {
   just({})
     .assign('scale', store.scale)
@@ -73,5 +91,6 @@ const calcLineWidth = (i: number): number => {
 export const renderSystem: System = (store) => {
   backgroundRenderSystem(store);
   lineRenderSystem(store);
+  traceRenderSystem(store);
   entityRenderSystem(store);
 };

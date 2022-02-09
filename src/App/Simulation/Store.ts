@@ -11,6 +11,7 @@ import {
   makeState,
   State,
   System,
+  Trace,
 } from './Types';
 
 class SimulationStore {
@@ -22,6 +23,7 @@ class SimulationStore {
       state: observable,
       addEntity: action,
       addSystem: action,
+      addTrace: action,
       runSystems: action,
       withEntities: action,
       filterEntities: action,
@@ -56,6 +58,10 @@ class SimulationStore {
   addSystem = (system: System): void => {
     this.state.systems = [...this.state.systems, system];
   };
+
+  addTrace = (trace: Trace): void => {
+    this.state.traces.push(trace)
+  }
 
   runSystems = (): void => {
     this.state.systems.forEach((system) => system(this));

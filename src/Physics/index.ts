@@ -1,5 +1,5 @@
 import { when } from '@execonline-inc/maybe-adapter';
-import { just, Maybe, nothing } from 'maybeasy';
+import { just, Maybe } from 'maybeasy';
 import SimulationStore from '../App/Simulation/Store';
 import { Entity, Shape, System } from '../App/Simulation/Types';
 import Vector from '../Vector';
@@ -98,18 +98,11 @@ export const airResistance = (entity: Entity, dt: number): Maybe<Entity> =>
     });
 
 const addTrackingEntity = (store: SimulationStore, entity: Entity) =>
-  store.addEntity({
-    position: entity.position,
-    shape: entity.shape,
-    fillStyle: entity.fillStyle,
-    velocity: nothing(),
-    mass: nothing(),
-    dragCoefficient: nothing(),
-    restitutionCoefficient: nothing(),
-    trackPosition: nothing(),
-    name: nothing(),
-    persistent: nothing(),
-  });
+  just({})
+    .assign('position', entity.position)
+    .assign('shape', entity.shape)
+    .assign('fillStyle', entity.fillStyle)
+    .do(store.addTrace);
 
 export const physicsSystem: System = (store) => {
   store.contextVars.running.do(() => {
