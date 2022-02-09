@@ -43,8 +43,8 @@ const Display: React.FC<Props> = ({ store }) => (
           onClick={() =>
             store.addEntity({
               position: just(new Vector(0, 0.121)),
-              name: just(''),
-              velocity: just(new Vector(5, 5)),
+              name: just('New Item'),
+              velocity: just(new Vector(15, 15)),
               mass: nothing(),
               shape: just(circleShape(0.121)),
               fillStyle: just(theme.colors.base0B.value),

@@ -133,7 +133,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
             entity={entity}
             store={store}
             form={(fn) =>
-              fn('velocity', just(new Vector(5, 5)), (velocity) => (
+              fn('velocity', just(new Vector(15, 15)), (velocity) => (
                 <>
                   (
                   <label>
@@ -174,7 +174,7 @@ const ShowEntity: React.FC<Props> = ({ entityId, store }) =>
             entity={entity}
             store={store}
             form={(fn) =>
-              fn('velocity', just(new Vector(5, 5)), (velocity) => (
+              fn('velocity', just(new Vector(15, 15)), (velocity) => (
                 <>
                   <Input
                     aria-label="Speed (cm/s)"

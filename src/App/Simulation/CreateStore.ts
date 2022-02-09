@@ -23,45 +23,6 @@ export const createStore = (): SimulationStore => {
     persistent: just(null),
   });
 
-  store.addEntity({
-    position: just(new Vector(0.0, 0.121)),
-    velocity: just(new Vector(5, 5)),
-    shape: just(circleShape(0.121)),
-    fillStyle: just(theme.colors.base08.value),
-    mass: just(0.6),
-    dragCoefficient: nothing(),
-    restitutionCoefficient: just(0.77),
-    trackPosition: nothing(),
-    name: just('Realistic Bouncing'),
-    persistent: just(null),
-  });
-
-  store.addEntity({
-    position: just(new Vector(0.1, 0.121)),
-    velocity: just(new Vector(5, 5)),
-    shape: just(circleShape(0.121)),
-    fillStyle: just(theme.colors.base0D.value),
-    mass: just(0.6),
-    dragCoefficient: just(0.47),
-    restitutionCoefficient: nothing(),
-    trackPosition: nothing(),
-    name: just('Realistic Drag'),
-    persistent: just(null),
-  });
-
-  store.addEntity({
-    position: just(new Vector(0.2, 0.121)),
-    velocity: just(new Vector(5, 5)),
-    shape: just(circleShape(0.121)),
-    fillStyle: just(theme.colors.base0B.value),
-    mass: just(0.6),
-    dragCoefficient: just(0.47),
-    restitutionCoefficient: just(0.77),
-    trackPosition: nothing(),
-    name: just('Realistic Bouncing & Drag'),
-    persistent: just(null),
-  });
-
   store.addSystem(physicsSystem);
   store.addSystem(renderSystem);
 
