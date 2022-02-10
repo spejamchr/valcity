@@ -29,20 +29,10 @@ export const createStore = (): SimulationStore => {
   return store;
 };
 
-export const addWindowEventListeners = (
-  store: SimulationStore,
-  canvas: HTMLCanvasElement
-): void => {
+export const addSimulationEventListeners = (canvas: HTMLCanvasElement): void => {
   window.addEventListener('resize', () => setCanvasScaling(canvas), true);
-  window.addEventListener('keydown', store.recordSpacePressed, true);
-  window.addEventListener('keyup', store.recordSpaceReleased, true);
 };
 
-export const removeWindowEventListeners = (
-  store: SimulationStore,
-  canvas: HTMLCanvasElement
-): void => {
+export const removeSimulationEventListeners = (canvas: HTMLCanvasElement): void => {
   window.removeEventListener('resize', () => setCanvasScaling(canvas), true);
-  window.removeEventListener('keydown', store.recordSpacePressed, true);
-  window.removeEventListener('keyup', store.recordSpaceReleased, true);
 };

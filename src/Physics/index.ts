@@ -44,7 +44,7 @@ const flatElasticCollision = (
   shape: Shape
 ): Pick<Entity, 'position' | 'velocity'> => {
   const energy = entityEnergy({ mass: 1, position, shape, velocity });
-  position.y = shape.radius;
+  position = position.withY(shape.radius);
   const potentialEnergy = entityPotentialEnergy({ mass: 1, position, shape });
   const kineticEnergy = energy - potentialEnergy;
   const speedsqrd = 2 * kineticEnergy || 0.00001;

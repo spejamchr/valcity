@@ -27,8 +27,6 @@ class SimulationStore {
       runSystems: action,
       withEntities: action,
       filterEntities: action,
-      recordSpacePressed: action,
-      recordSpaceReleased: action,
       updateTime: action,
       setCanvasAndContext: action,
       pause: action,
@@ -77,14 +75,6 @@ class SimulationStore {
 
   filterEntities = (pred: (entity: Entity) => boolean): void => {
     this.state.entities = this.state.entities.filter(pred);
-  };
-
-  recordSpacePressed = (e: KeyboardEvent): void => {
-    if (e.key === ' ' && !e.repeat) this.state.contextVars.spacePressedAt = just(performance.now());
-  };
-
-  recordSpaceReleased = (e: KeyboardEvent): void => {
-    if (e.key === ' ') this.state.contextVars.spacePressedAt = nothing();
   };
 
   updateTime = (time: number): void => {

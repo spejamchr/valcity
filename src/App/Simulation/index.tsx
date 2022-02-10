@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { canvasAndContextFromRef } from '../../CanvasHelpers';
-import { addWindowEventListeners, removeWindowEventListeners } from './CreateStore';
+import { addSimulationEventListeners, removeSimulationEventListeners } from './CreateStore';
 import SimulationStore from './Store';
 
 interface Props {
@@ -14,7 +14,7 @@ const Simulation: React.FC<Props> = ({ store }) => {
   React.useEffect(() => {
     canvasAndContextFromRef(ref).do(({ canvas, context }) => {
       store.setCanvasAndContext({ canvas, context });
-      addWindowEventListeners(store, canvas);
+      addSimulationEventListeners(canvas);
 
       const render = (time: number) => {
         store.updateTime(time);
@@ -24,7 +24,7 @@ const Simulation: React.FC<Props> = ({ store }) => {
 
         return () => {
           cancelAnimationFrame(requestId);
-          removeWindowEventListeners(store, canvas);
+          removeSimulationEventListeners(canvas);
         };
       };
 

@@ -77,7 +77,6 @@ export const entityWithInternals = (entity: Entity): EntityWithInternals => ({
 export interface ContextVars {
   frameStartAt: number;
   dt: number;
-  spacePressedAt: Maybe<number>;
   canvasAndContext: Maybe<CanvasAndContext>;
   running: Maybe<null>;
 }
@@ -85,7 +84,6 @@ export interface ContextVars {
 export const makeContextVars = (): ContextVars => ({
   frameStartAt: performance.now(),
   dt: 0.001,
-  spacePressedAt: nothing(),
   canvasAndContext: nothing(),
   running: nothing(),
 });
