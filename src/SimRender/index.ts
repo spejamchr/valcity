@@ -1,11 +1,10 @@
 import { just } from 'maybeasy';
 import { System } from '../App/Simulation/Types';
-import { theme } from '../stitches.config';
 
 const backgroundRenderSystem: System = (store) => {
   store.contextVars.canvasAndContext.do(({ canvas, context }) => {
     context.rect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = theme.colors.base00.value;
+    context.fillStyle = store.themeStore.theme.colors.base00.value;
     context.fill();
   });
 };
@@ -34,7 +33,7 @@ const traceRenderSystem: System = (store) => {
               context.moveTo(xPixStart, yPixStart);
               context.lineTo(xPixEnd, yPixEnd);
               context.closePath();
-              context.strokeStyle = trace.fillStyle;
+              context.strokeStyle = store.themeStore.theme.colors[trace.fillStyle].value;
               context.stroke();
             }
           });
@@ -64,7 +63,7 @@ const velocityRenderSystem: System = (store) => {
             context.moveTo(xPixStart, yPixStart);
             context.lineTo(xPixPoint, yPixPoint);
             context.closePath();
-            context.strokeStyle = fillStyle;
+            context.strokeStyle = store.themeStore.theme.colors[fillStyle].value;
             context.stroke();
           })
       )
@@ -88,7 +87,7 @@ const entityRenderSystem: System = (store) => {
 
             context.beginPath();
             context.arc(xPix, yPix, shape.radius * scale, 0, 2 * Math.PI);
-            context.fillStyle = fillStyle;
+            context.fillStyle = store.themeStore.theme.colors[fillStyle].value;
             context.fill();
           })
       )
@@ -109,7 +108,7 @@ const lineRenderSystem: System = (store) => {
       for (let xi = xLeft; xi <= xRight; xi++) {
         const xPix = (xi - minViewX) * scale;
         const pxWidth = calcLineWidth(xi) * scale;
-        context.fillStyle = theme.colors.base03.value;
+        context.fillStyle = store.themeStore.theme.colors.base03.value;
         context.fillRect(xPix - pxWidth / 2, 0, pxWidth, canvas.height);
       }
 
@@ -117,7 +116,7 @@ const lineRenderSystem: System = (store) => {
       for (let yi = 1; yi <= xTop; yi++) {
         const yPix = canvas.height - yi * scale;
         const pxHeight = calcLineWidth(yi) * scale;
-        context.fillStyle = theme.colors.base03.value;
+        context.fillStyle = store.themeStore.theme.colors.base03.value;
         context.fillRect(0, yPix - pxHeight / 2, canvas.width, pxHeight);
       }
     });

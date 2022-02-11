@@ -3,6 +3,7 @@ import { just, Maybe, nothing } from 'maybeasy';
 import { action, computed, observable } from 'mobx';
 import { CanvasAndContext } from '../../CanvasHelpers';
 import fullyAnnotatedObservable from '../../FullyAnnotatedObservable';
+import ThemeStore from '../ThemeStore';
 import {
   ContextVars,
   Entity,
@@ -16,8 +17,8 @@ import {
 
 class SimulationStore {
   public state: State;
-  constructor() {
-    this.state = makeState();
+  constructor(themeStore: ThemeStore) {
+    this.state = makeState(themeStore);
 
     fullyAnnotatedObservable<SimulationStore>(this, {
       state: observable,
@@ -45,6 +46,7 @@ class SimulationStore {
       maxViewY: computed,
       sideMarginPx: computed,
       scale: computed,
+      themeStore: computed,
     });
   }
 
@@ -192,6 +194,10 @@ class SimulationStore {
     return this.contextVars.canvasAndContext.map(({ canvas }) =>
       Math.min(this.heightScale(canvas), this.widthScale(canvas))
     );
+  }
+
+  get themeStore(): ThemeStore {
+    return this.contextVars.themeStore
   }
 }
 

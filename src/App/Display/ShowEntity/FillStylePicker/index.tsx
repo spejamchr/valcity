@@ -49,16 +49,6 @@ const Row = styled('span', {
   justifyContent: 'space-between',
 });
 
-type Token =
-  | typeof theme.colors.base08
-  | typeof theme.colors.base09
-  | typeof theme.colors.base0A
-  | typeof theme.colors.base0B
-  | typeof theme.colors.base0C
-  | typeof theme.colors.base0D
-  | typeof theme.colors.base0E
-  | typeof theme.colors.base0F;
-
 const FillStylePicker: React.FC<Props> = ({ fillStyle, store, entityId }) => {
   const [show, setShow] = React.useState(false);
   const ref = React.useRef<HTMLButtonElement>(null);
@@ -66,19 +56,19 @@ const FillStylePicker: React.FC<Props> = ({ fillStyle, store, entityId }) => {
   const hiding = () => setShow(false);
   const showing = () => setShow(true);
 
-  const Picker: React.FC<{ color: Token | string; main?: boolean }> = ({ color, main }) => (
+  const Picker: React.FC<{ fillStyle: FillStyle; main?: boolean }> = ({ fillStyle, main }) => (
     <Span
       aria-label="Pick color"
       tabIndex={0}
       css={{
-        borderColor: color,
+        borderColor: theme.colors[fillStyle],
         margin: 5,
-        ...(main ? { boxShadow: `0 0 0 7px ${theme.colors.base02}`, zIndex:1 } : {}),
+        ...(main ? { boxShadow: `0 0 0 7px ${theme.colors.base02}`, zIndex: 1 } : {}),
       }}
       onClick={() => {
         hiding();
         store.updateEntity(entityId, {
-          fillStyle: just(typeof color === 'string' ? color : color.value),
+          fillStyle: just(fillStyle),
         });
       }}
     />
@@ -88,7 +78,7 @@ const FillStylePicker: React.FC<Props> = ({ fillStyle, store, entityId }) => {
     <Span
       ref={ref}
       aria-label="Change item's color"
-      css={{ borderColor: fillStyle.toString(), float: 'right' }}
+      css={{ borderColor: theme.colors[fillStyle], float: 'right' }}
       onClick={showing}
     />
   );
@@ -102,19 +92,19 @@ const FillStylePicker: React.FC<Props> = ({ fillStyle, store, entityId }) => {
           css={{ left: rect.left - containerSize / 2 - 1, top: rect.top - containerSize / 2 - 1 }}
         >
           <Row>
-            <Picker color={theme.colors.base08} />
-            <Picker color={theme.colors.base09} />
-            <Picker color={theme.colors.base0A} />
+            <Picker fillStyle="base08" />
+            <Picker fillStyle="base09" />
+            <Picker fillStyle="base0A" />
           </Row>
           <Row>
-            <Picker color={theme.colors.base0F} />
-            <Picker main color={fillStyle.toString()} />
-            <Picker color={theme.colors.base0B} />
+            <Picker fillStyle="base0F" />
+            <Picker main fillStyle={fillStyle} />
+            <Picker fillStyle="base0B" />
           </Row>
           <Row>
-            <Picker color={theme.colors.base0E} />
-            <Picker color={theme.colors.base0D} />
-            <Picker color={theme.colors.base0C} />
+            <Picker fillStyle="base0E" />
+            <Picker fillStyle="base0D" />
+            <Picker fillStyle="base0C" />
           </Row>
         </Container>
       </>

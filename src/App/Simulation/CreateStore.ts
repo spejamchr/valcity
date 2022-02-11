@@ -2,19 +2,18 @@ import { just, nothing } from 'maybeasy';
 import { setCanvasScaling } from '../../CanvasHelpers';
 import { physicsSystem } from '../../Physics';
 import { renderSystem } from '../../SimRender';
-import { theme } from '../../stitches.config';
 import Vector from '../../Vector';
+import ThemeStore from '../ThemeStore';
 import SimulationStore from './Store';
-import { circleShape } from './Types';
 
-export const createStore = (): SimulationStore => {
-  const store = new SimulationStore();
+export const createStore = (themeStore: ThemeStore): SimulationStore => {
+  const store = new SimulationStore(themeStore);
 
   store.addEntity({
-    position: just(new Vector(0.0, 0)),
+    position: just(new Vector(0.0, 0.12)),
     velocity: nothing(),
-    shape: just(circleShape(0.01)),
-    fillStyle: just(theme.colors.base01.value),
+    shape: nothing(),
+    fillStyle: nothing(),
     mass: nothing(),
     dragCoefficient: nothing(),
     restitutionCoefficient: nothing(),

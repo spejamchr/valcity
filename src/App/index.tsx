@@ -3,11 +3,13 @@ import * as React from 'react';
 import Display from './Display';
 import Simulation from './Simulation';
 import { createStore } from './Simulation/CreateStore';
+import ThemeStore from './ThemeStore';
 
 interface Props {}
 
 const App: React.FC<Props> = () => {
-  const store = createStore();
+  const themeStore = new ThemeStore();
+  const store = createStore(themeStore);
 
   return (
     <>

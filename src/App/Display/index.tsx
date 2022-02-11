@@ -27,7 +27,7 @@ export const Control = styled('button', {
 });
 
 const Display: React.FC<Props> = ({ store }) => (
-  <Info>
+  <Info className={store.themeStore.theme}>
     {store.contextVars.running
       .map(() => <Control onClick={store.pause}>Pause</Control>)
       .getOrElse(() => (
@@ -47,7 +47,7 @@ const Display: React.FC<Props> = ({ store }) => (
               velocity: just(new Vector(15, 15)),
               mass: just(0.6),
               shape: just(circleShape(0.121)),
-              fillStyle: just(theme.colors.base0B.value),
+              fillStyle: just('base0B'),
               dragCoefficient: nothing(),
               restitutionCoefficient: nothing(),
               trackPosition: nothing(),
@@ -66,6 +66,8 @@ const Display: React.FC<Props> = ({ store }) => (
       </p>
       <p>For fun :)</p>
     </ClickToShow>
+    <button onClick={() => store.themeStore.setTheme('Porple')}>Porple!</button>
+    <button onClick={() => store.themeStore.setTheme('Default Dark')}>Default!</button>
   </Info>
 );
 

@@ -1,9 +1,18 @@
 import { Maybe, nothing } from 'maybeasy';
 import { CanvasAndContext } from '../../CanvasHelpers';
 import Vector from '../../Vector';
+import ThemeStore from '../ThemeStore';
 import SimulationStore from './Store';
 
-export type FillStyle = CanvasRenderingContext2D['fillStyle'];
+export type FillStyle =
+  | 'base08'
+  | 'base09'
+  | 'base0A'
+  | 'base0B'
+  | 'base0C'
+  | 'base0D'
+  | 'base0E'
+  | 'base0F';
 
 export interface RectangleShape {
   kind: 'rectangle-shape';
@@ -79,19 +88,21 @@ export interface ContextVars {
   dt: number;
   canvasAndContext: Maybe<CanvasAndContext>;
   running: Maybe<null>;
+  themeStore: ThemeStore;
 }
 
-export const makeContextVars = (): ContextVars => ({
+export const makeContextVars = (themeStore: ThemeStore): ContextVars => ({
   frameStartAt: performance.now(),
   dt: 0.001,
   canvasAndContext: nothing(),
   running: nothing(),
+  themeStore,
 });
 
 // A System runs any action with the whole store
 export type System = (store: SimulationStore) => void;
 
-export type Trace = Pick<Components, 'position' | 'fillStyle'> & {id: number}
+export type Trace = Pick<Components, 'position' | 'fillStyle'> & { id: number };
 
 export interface State {
   entities: ReadonlyArray<EntityWithInternals>;
@@ -100,9 +111,9 @@ export interface State {
   systems: ReadonlyArray<System>;
 }
 
-export const makeState = (): State => ({
+export const makeState = (themeStore: ThemeStore): State => ({
   entities: [],
   traces: [],
-  contextVars: makeContextVars(),
+  contextVars: makeContextVars(themeStore),
   systems: [],
 });
