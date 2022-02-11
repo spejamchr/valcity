@@ -9,6 +9,7 @@ import Info from '../Info';
 import SimulationStore from '../Simulation/Store';
 import { circleShape, Entity } from '../Simulation/Types';
 import ShowEntity from './ShowEntity';
+import ThemePicker from './ThemePicker';
 
 interface Props {
   store: SimulationStore;
@@ -24,6 +25,11 @@ export const Control = styled('button', {
   display: 'inline-block',
   fontSize: '16px',
   cursor: 'pointer',
+});
+
+const Themes = styled('div', {
+  display: 'flex',
+  flexWrap: 'wrap',
 });
 
 const Display: React.FC<Props> = ({ store }) => (
@@ -59,15 +65,31 @@ const Display: React.FC<Props> = ({ store }) => (
         </Control>
       </>
     </ClickToShow>
+    <ClickToShow title="Change Theme">
+      <p>Dark</p>
+      <Themes>
+        {store.themeStore.options
+          .filter(({ dark }) => dark)
+          .map((option) => (
+            <ThemePicker key={option.name} store={store} option={option} />
+          ))}
+      </Themes>
+      <p>Light</p>
+      <Themes>
+        {store.themeStore.options
+          .filter(({ dark }) => !dark)
+          .map((option) => (
+            <ThemePicker key={option.name} store={store} option={option} />
+          ))}
+      </Themes>
+    </ClickToShow>
     <ClickToShow title="About">
       <p>
-        Made by <a href="https://github.com/spejamchr">Spencer Christiansen</a> on{' '}
+        Made by <a href="https://github.com/spejamchr">Spencer Christiansen</a>; code on{' '}
         <a href="https://github.com/spejamchr/valcity">GitHub</a>.
       </p>
       <p>For fun :)</p>
     </ClickToShow>
-    <button onClick={() => store.themeStore.setTheme('Porple')}>Porple!</button>
-    <button onClick={() => store.themeStore.setTheme('Default Dark')}>Default!</button>
   </Info>
 );
 
