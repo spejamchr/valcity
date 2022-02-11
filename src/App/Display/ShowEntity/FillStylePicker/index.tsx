@@ -11,6 +11,8 @@ interface Props {
   entityId: number;
 }
 
+const spanBorder = 9;
+
 const Span = styled('button', {
   height: 0,
   width: 0,
@@ -18,8 +20,8 @@ const Span = styled('button', {
   display: 'flex',
   alignContent: 'center',
   justifyContent: 'center',
-  border: 'solid 9px',
-  borderRadius: 9,
+  border: `solid ${spanBorder}px`,
+  borderRadius: spanBorder,
   boxShadow: `0 0 0 7px ${theme.colors.base00}`,
   margin: 7,
   cursor: 'pointer',
@@ -29,6 +31,7 @@ const innerContainerSize = 84;
 const containerPadding = 7;
 const containerBorder = 3;
 const containerSize = innerContainerSize + 2 * (containerPadding + containerBorder);
+const containerOffset = containerSize / 2 + spanBorder;
 
 const Container = styled('span', {
   display: 'flex',
@@ -42,6 +45,15 @@ const Container = styled('span', {
   border: `${theme.colors.base02} solid ${containerBorder}px`,
   padding: containerPadding,
   borderRadius: 10,
+});
+
+const Blocker = styled('div', {
+  position: 'fixed',
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  backgroundColor: '#00000055',
 });
 
 const Row = styled('span', {
@@ -78,7 +90,7 @@ const FillStylePicker: React.FC<Props> = ({ fillStyle, store, entityId }) => {
     <Span
       ref={ref}
       aria-label="Change item's color"
-      css={{ borderColor: theme.colors[fillStyle], float: 'right' }}
+      css={{ borderColor: theme.colors[fillStyle], float: 'right', marginRight: 40 }}
       onClick={showing}
     />
   );
@@ -88,9 +100,8 @@ const FillStylePicker: React.FC<Props> = ({ fillStyle, store, entityId }) => {
     return (
       <>
         {anchor}
-        <Container
-          css={{ left: rect.left - containerSize / 2 - 1, top: rect.top - containerSize / 2 - 1 }}
-        >
+        <Blocker onClick={hiding} />
+        <Container css={{ left: rect.left - containerOffset, top: rect.top - containerOffset }}>
           <Row>
             <Picker fillStyle="base08" />
             <Picker fillStyle="base09" />

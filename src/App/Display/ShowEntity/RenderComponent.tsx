@@ -10,7 +10,6 @@ const ComponentRow = styled('div', {
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
-  minWidth: 280,
   padding: 1,
 });
 

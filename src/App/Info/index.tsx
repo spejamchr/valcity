@@ -21,6 +21,7 @@ const Info = styled('div', {
   border: `solid ${theme.colors.base01} ${borderWidth}px`,
   maxHeight: `calc(100vh - ${verticalSpace}px)`,
   overflowY: 'scroll',
+  overflowX: 'visible',
   maxWidth: '23vw',
   'a:link': { color: theme.colors.base0D },
   'a:visited': { color: theme.colors.base0E },
